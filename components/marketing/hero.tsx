@@ -35,7 +35,7 @@ export function Hero() {
         }}
       />
 
-      <div className="relative max-w-[1280px] mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] items-center gap-14">
+      <div className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-20 grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] items-center gap-14">
 
         {/* Copy */}
         <motion.div

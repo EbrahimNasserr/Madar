@@ -1,3 +1,5 @@
+import { SmoothScrollProvider } from '@/components/smooth-scroll-provider'
+
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <SmoothScrollProvider>{children}</SmoothScrollProvider>
 }
