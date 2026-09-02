@@ -15,6 +15,7 @@ import {
   X,
   Menu,
 } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useApp, type AppView } from './app-context'
 
 const navItems: { id: AppView; label: string; icon: React.ElementType; badge?: 'students' | 'groups'; isPro?: boolean }[] = [
@@ -35,10 +36,15 @@ interface SidebarProps {
 }
 
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
-  const { currentView, setCurrentView, teacher, plan, togglePlan, setIsQuickAddOpen } = useApp()
+  const { teacher, plan, togglePlan, setIsQuickAddOpen } = useApp()
+  const router   = useRouter()
+  const pathname = usePathname()
+
+  // Derive active view from the URL path
+  const currentView = (pathname.split('/').pop() ?? 'dashboard') as AppView
 
   const go = (view: AppView) => {
-    setCurrentView(view)
+    router.push(view === 'landing' ? '/' : view === 'dashboard' ? '/dashboard' : `/${view}`)
     onClose()
   }
 

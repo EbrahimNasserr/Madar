@@ -18,7 +18,6 @@ interface TopbarProps {
 
 export function Topbar({ onMenuToggle }: TopbarProps) {
   const {
-    setCurrentView,
     plan,
     togglePlan,
     unreadNotificationCount,

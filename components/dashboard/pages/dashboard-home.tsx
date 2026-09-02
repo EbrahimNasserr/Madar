@@ -14,14 +14,15 @@ import {
   Radio,
   Layers,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useApp } from '../app-context'
 
 export function DashboardHome() {
+  const router = useRouter()
   const {
     teacher,
     todaySessions,
     startAttendanceForSession,
-    setCurrentView,
     expectedMonthlyRevenue,
     collectedMonthlyRevenue,
     remainingMonthlyRevenue,
@@ -46,7 +47,7 @@ export function DashboardHome() {
         </div>
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button
-            onClick={() => setCurrentView('attendance')}
+            onClick={() => router.push('/attendance')}
             className="px-4 py-2 bg-white border border-gray-200 text-[#111827] rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
           >
             تسجيل سريع
@@ -130,7 +131,7 @@ export function DashboardHome() {
             </span>
           </div>
           <button
-            onClick={() => setCurrentView('sessions')}
+            onClick={() => router.push('/sessions')}
             className="text-xs font-bold text-[#3157D5] hover:underline flex items-center gap-1 cursor-pointer"
           >
             <span>عرض كل جدول الحصص</span>
@@ -340,7 +341,7 @@ export function DashboardHome() {
               </span>
             </div>
             <button
-              onClick={() => setCurrentView('payments')}
+              onClick={() => router.push('/payments')}
               className="font-bold text-[#3157D5] hover:underline cursor-pointer"
             >
               عرض المصروفات ←
@@ -395,8 +396,8 @@ export function DashboardHome() {
               {[
                 { label: '+ إضافة طالب جديد',       action: () => setIsQuickAddOpen(true) },
                 { label: '+ إنشاء مجموعة جديدة',     action: () => setIsQuickAddOpen(true) },
-                { label: '⚡ تسجيل حضور سريع',       action: () => setCurrentView('attendance') },
-                { label: '💵 تسجيل دفعة مالية',      action: () => setCurrentView('payments') },
+                { label: '⚡ تسجيل حضور سريع',       action: () => router.push('/attendance') },
+                { label: '💵 تسجيل دفعة مالية',      action: () => router.push('/payments') },
               ].map(({ label, action }) => (
                 <button
                   key={label}
@@ -421,7 +422,7 @@ export function DashboardHome() {
               إرسال تقارير واتساب تلقائية لأولياء الأمور، وإدارة الكويزات الذكية وترتيب الأوائل.
             </p>
             <button
-              onClick={() => setCurrentView('quizzes')}
+              onClick={() => router.push('/quizzes')}
               className="w-full bg-white text-[#3157D5] hover:bg-white/90 text-xs font-bold py-2.5 rounded-lg shadow-sm transition-all cursor-pointer"
             >
               استكشف مزايا Pro

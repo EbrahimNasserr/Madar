@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Check, LayoutDashboard, Users, CalendarDays, WalletCards, Menu, X, UserCheck, Layers, Award, LineChart, Settings, Home } from 'lucide-react'
 
@@ -22,7 +23,9 @@ const IS_PRO = false
 // ─── Inner shell (needs context) ─────────────────────────────────────────────
 
 function DashboardShell() {
-  const { currentView, setCurrentView, plan } = useApp()
+  const { plan } = useApp()
+  const router   = useRouter()
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [toast,      setToast]      = useState(false)
 
@@ -31,8 +34,13 @@ function DashboardShell() {
     window.setTimeout(() => setToast(false), 2600)
   }
 
-  // Map AppView → rendered page (PageKey pages pass through; 'landing' treated as dashboard fallback)
-  const pageKey = (currentView === 'landing' ? 'dashboard' : currentView) as PageKey
+  // Derive the active page from the URL segment (e.g. /students → 'students', /dashboard → 'dashboard')
+  const segment = pathname.split('/').pop() ?? 'dashboard'
+  const pageKey = (segment === '' ? 'dashboard' : segment) as PageKey
+
+  const go = (view: AppView) => {
+    router.push(view === 'landing' ? '/' : view === 'dashboard' ? '/dashboard' : `/${view}`)
+  }
 
   const mobileNavItems = [
     { id: 'dashboard'  as AppView, label: 'الرئيسية',    icon: LayoutDashboard },
@@ -72,9 +80,9 @@ function DashboardShell() {
         {mobileNavItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            onClick={() => setCurrentView(id)}
+            onClick={() => go(id)}
             className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold ${
-              currentView === id ? 'text-[#3157D5]' : 'text-[#667085]'
+              pageKey === id ? 'text-[#3157D5]' : 'text-[#667085]'
             }`}
           >
             <Icon className="w-5 h-5 mb-0.5" />
@@ -104,11 +112,11 @@ function DashboardShell() {
 // ─── Mobile "More" drawer ─────────────────────────────────────────────────────
 
 function MobileMoreButton() {
-  const { setCurrentView } = useApp()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
 
   const go = (view: AppView) => {
-    setCurrentView(view)
+    router.push(view === 'landing' ? '/' : view === 'dashboard' ? '/dashboard' : `/${view}`)
     setOpen(false)
   }
 
@@ -168,7 +176,7 @@ function MobileMoreButton() {
                 <span>الإعدادات والملف الشخصي</span>
               </button>
               <button
-                onClick={() => go('landing' as AppView)}
+                onClick={() => { router.push('/'); setOpen(false) }}
                 className="w-full py-2.5 bg-[#EAF0FF] text-[#3157D5] rounded-xl text-xs font-bold flex items-center justify-center gap-2"
               >
                 <Home className="w-4 h-4" />

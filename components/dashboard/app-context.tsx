@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import type { PageKey } from './types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -96,10 +97,6 @@ export type AddSessionInput = Omit<Session, 'id'>
 export type RecordPaymentInput = Omit<Payment, 'id' | 'date'>
 
 interface AppContextValue {
-  // Navigation
-  currentView: AppView
-  setCurrentView: (view: AppView) => void
-
   // Teacher info
   teacher: Teacher
 
@@ -307,7 +304,7 @@ function uid(prefix: string) {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [currentView, setCurrentView]   = useState<AppView>('dashboard')
+  const router = useRouter()
   const [groups,      setGroups]         = useState<Group[]>(SEED_GROUPS)
   const [students,    setStudents]       = useState<Student[]>(SEED_STUDENTS)
   const [sessions,    setSessions]       = useState<Session[]>(SEED_SESSIONS)
@@ -330,7 +327,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const markNotificationsAsRead = () =>
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
 
-  const startAttendanceForSession = (_id: string) => setCurrentView('attendance')
+  const startAttendanceForSession = (_id: string) => router.push('/attendance')
 
   const togglePlan = () => setPlan(prev => (prev === 'basic' ? 'pro' : 'basic'))
 
@@ -401,8 +398,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
-        currentView,
-        setCurrentView,
         teacher: {
           name:          'أحمد محمد',
           subject:       'رياضيات',
