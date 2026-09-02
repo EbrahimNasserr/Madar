@@ -1,0 +1,327 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Madar Design System — Token Map ─────────────────────────────────────── */
+@theme inline {
+  /* Surface / Background */
+  --color-background:               var(--background);
+  --color-foreground:               var(--foreground);
+
+  /* Card */
+  --color-card:                     var(--card);
+  --color-card-foreground:          var(--card-foreground);
+
+  /* Primary — Madar Indigo */
+  --color-primary:                  var(--primary);
+  --color-primary-foreground:       var(--primary-foreground);
+
+  /* Secondary — Madar Violet */
+  --color-secondary:                var(--secondary);
+  --color-secondary-foreground:     var(--secondary-foreground);
+
+  /* Muted */
+  --color-muted:                    var(--muted);
+  --color-muted-foreground:         var(--muted-foreground);
+
+  /* Destructive */
+  --color-destructive:              var(--destructive);
+  --color-destructive-foreground:   var(--destructive-foreground);
+
+  /* Border / Input / Ring */
+  --color-border:                   var(--border);
+  --color-input:                    var(--input);
+  --color-ring:                     var(--ring);
+
+  /* Surface containers */
+  --color-surface-lowest:           var(--surface-lowest);
+  --color-surface-low:              var(--surface-low);
+  --color-surface-container:        var(--surface-container);
+  --color-surface-high:             var(--surface-high);
+  --color-surface-highest:          var(--surface-highest);
+
+  /* On-surface */
+  --color-on-surface:               var(--on-surface);
+  --color-on-surface-variant:       var(--on-surface-variant);
+  --color-outline:                  var(--outline);
+  --color-outline-variant:          var(--outline-variant);
+
+  /* Tertiary — success green */
+  --color-tertiary:                 var(--tertiary);
+  --color-tertiary-foreground:      var(--tertiary-foreground);
+
+  /* ─── Radius ────────────────────────────────────────────────────────────── */
+  --radius-sm:   0.25rem;   /* 4px  */
+  --radius:      0.5rem;    /* 8px  */
+  --radius-md:   0.75rem;   /* 12px — standard elements */
+  --radius-lg:   1rem;      /* 16px — large widgets */
+  --radius-xl:   1.5rem;    /* 24px */
+  --radius-full: 9999px;    /* circular */
+
+  /* ─── Typography — IBM Plex Sans Arabic ─────────────────────────────────── */
+  --font-sans:   var(--font-ibm-plex-arabic), 'IBM Plex Sans Arabic', 'Arial', sans-serif;
+  --font-arabic: var(--font-ibm-plex-arabic), 'IBM Plex Sans Arabic', 'Arial', sans-serif;
+
+  /* Type scale */
+  --text-display-lg:   3rem;       /* 48px */
+  --text-display-md:   2.25rem;    /* 36px */
+  --text-headline-lg:  1.875rem;   /* 30px */
+  --text-headline-md:  1.5rem;     /* 24px */
+  --text-headline-sm:  1.25rem;    /* 20px */
+  --text-body-lg:      1.125rem;   /* 18px */
+  --text-body-md:      1rem;       /* 16px */
+  --text-body-sm:      0.875rem;   /* 14px */
+  --text-label-md:     0.75rem;    /* 12px */
+
+  /* ─── Spacing ────────────────────────────────────────────────────────────── */
+  --spacing-container-max: 1280px;
+  --spacing-gutter:        1.5rem;
+  --spacing-margin-mobile: 1rem;
+  --spacing-margin-desktop:2.5rem;
+  --spacing-stack-sm:      0.5rem;
+  --spacing-stack-md:      1rem;
+  --spacing-stack-lg:      2rem;
+}
+
+/* ─── Light Mode — Madar Palette ───────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Canvas & surfaces */
+  --background:           #f9f9ff;   /* surface */
+  --foreground:           #141b2b;   /* on-surface */
+
+  /* Cards sit on a pure white plane */
+  --card:                 #ffffff;   /* surface-container-lowest */
+  --card-foreground:      #141b2b;
+
+  /* Primary — Madar Indigo */
+  --primary:              #063cbc;
+  --primary-foreground:   #ffffff;
+
+  /* Secondary — Madar Violet */
+  --secondary:            #5341da;
+  --secondary-foreground: #ffffff;
+
+  /* Muted — cool off-white containers */
+  --muted:                #e9edff;   /* surface-container */
+  --muted-foreground:     #444654;   /* on-surface-variant */
+
+  /* Destructive — red */
+  --destructive:          #ba1a1a;
+  --destructive-foreground: #ffffff;
+
+  /* Tertiary — success green */
+  --tertiary:             #00562e;
+  --tertiary-foreground:  #ffffff;
+
+  /* Border: 1px Madar outline-variant */
+  --border:               #c4c5d6;
+  --input:                #e1e8fd;   /* surface-container-high */
+  --ring:                 #3157d5;   /* primary-container = focus ring */
+
+  /* Surface containers */
+  --surface-lowest:       #ffffff;
+  --surface-low:          #f1f3ff;
+  --surface-container:    #e9edff;
+  --surface-high:         #e1e8fd;
+  --surface-highest:      #dce2f7;
+
+  /* On-surface */
+  --on-surface:           #141b2b;
+  --on-surface-variant:   #444654;
+  --outline:              #747685;
+  --outline-variant:      #c4c5d6;
+
+  /* Elevation */
+  --shadow-card:          0px 4px 12px rgba(17, 24, 39, 0.05);
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+
+  --background:           #293040;   /* inverse-surface */
+  --foreground:           #edf0ff;   /* inverse-on-surface */
+
+  --card:                 #1e2435;
+  --card-foreground:      #edf0ff;
+
+  --primary:              #b7c4ff;   /* inverse-primary */
+  --primary-foreground:   #001452;   /* on-primary-fixed */
+
+  --secondary:            #c5c0ff;   /* secondary-fixed-dim */
+  --secondary-foreground: #150067;
+
+  --muted:                #3a4058;
+  --muted-foreground:     #9ea5bd;
+
+  --destructive:          #ffb4ab;
+  --destructive-foreground: #690005;
+
+  --tertiary:             #51df8e;   /* tertiary-fixed-dim */
+  --tertiary-foreground:  #00210e;
+
+  --border:               rgba(196, 197, 214, 0.2);
+  --input:                rgba(255, 255, 255, 0.1);
+  --ring:                 #b7c4ff;
+
+  --surface-lowest:       #1a2030;
+  --surface-low:          #222840;
+  --surface-container:    #293040;
+  --surface-high:         #2e3650;
+  --surface-highest:      #343c58;
+
+  --on-surface:           #edf0ff;
+  --on-surface-variant:   #c4c5d6;
+  --outline:              #8e90a4;
+  --outline-variant:      #444654;
+
+  --shadow-card:          0px 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Base Styles ───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-arabic), 'IBM Plex Sans Arabic', Arial, sans-serif;
+  font-size: 1rem;           /* body-md: 16px */
+  line-height: 1.5;          /* 24px */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ─── Typography Utility Classes ────────────────────────────────────────────── */
+.text-display-lg {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 3.75rem;       /* 60px */
+  letter-spacing: 0;
+}
+
+.text-display-md {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 2.75rem;       /* 44px */
+  letter-spacing: 0;
+}
+
+.text-headline-lg {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 2.375rem;      /* 38px */
+}
+
+.text-headline-md {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;          /* 32px */
+}
+
+.text-headline-sm {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.75rem;       /* 28px */
+}
+
+.text-body-lg {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.75rem;       /* 28px */
+}
+
+.text-body-md {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5rem;        /* 24px */
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;       /* 20px */
+}
+
+.text-label-md {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1rem;          /* 16px */
+  letter-spacing: 0.05em;
+}
+
+/* ─── Madar Card Elevation ──────────────────────────────────────────────────── */
+.card-madar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);  /* 16px */
+}
+
+.card-madar:hover {
+  box-shadow: var(--shadow-card);
+}
+
+/* ─── Madar Badge / Chip ───────────────────────────────────────────────────── */
+.badge-success {
+  background: rgba(0, 86, 46, 0.1);
+  color: #00562e;
+  border-radius: var(--radius-full);
+}
+
+.badge-error {
+  background: rgba(186, 26, 26, 0.1);
+  color: #ba1a1a;
+  border-radius: var(--radius-full);
+}
+
+.badge-primary {
+  background: rgba(6, 60, 188, 0.1);
+  color: #063cbc;
+  border-radius: var(--radius-full);
+}
+
+.badge-secondary {
+  background: rgba(83, 65, 218, 0.1);
+  color: #5341da;
+  border-radius: var(--radius-full);
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

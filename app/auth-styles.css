@@ -1,0 +1,221 @@
+/* ─── Auth — Madar Design System ───────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--background);         /* #f9f9ff */
+  color: var(--foreground);              /* #141b2b */
+}
+
+/* Left panel — Madar inverse-surface dark */
+.auth-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 42px 10%;
+  color: var(--inverse-on-surface, #edf0ff);
+  background: #293040;                   /* inverse-surface */
+}
+
+.auth-aside .marketing-logo {
+  color: #edf0ff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.auth-aside h1 {
+  margin: 20px 0 15px;
+  font-size: clamp(38px, 5vw, 62px);
+  line-height: 1.1;
+  color: #edf0ff;
+}
+
+.auth-aside p:not(.marketing-eyebrow) {
+  color: #9ea5bd;                        /* muted-foreground dark */
+  line-height: 1.8;
+}
+
+.auth-perk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: #c4c5d6;                        /* on-surface-variant dark */
+  font-size: 13px;
+}
+
+.auth-perk svg {
+  width: 16px;
+  color: #b7c4ff;                        /* inverse-primary */
+}
+
+.auth-aside small {
+  color: #747685;                        /* outline */
+  font-size: 10px;
+}
+
+/* Right panel — auth form card */
+.auth-card {
+  align-self: center;
+  width: min(440px, calc(100% - 42px));
+  margin: auto;
+  padding: 42px;
+  background: var(--card);              /* #ffffff */
+  border: 1px solid var(--border);     /* #c4c5d6 */
+  border-radius: var(--radius-lg);     /* 16px */
+  box-shadow: 0 20px 50px rgba(6, 60, 188, 0.06);
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 31px;
+  color: var(--foreground);
+}
+
+.auth-description {
+  margin: 10px 0 25px;
+  color: var(--muted-foreground);      /* #444654 */
+  font-size: 13px;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--on-surface-variant, #444654);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid var(--border);     /* #c4c5d6 */
+  border-radius: var(--radius-md);     /* 12px */
+  outline: 0;
+  color: var(--foreground);
+  background: var(--surface-low, #f1f3ff);
+  font-size: 13px;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+.auth-card input:focus {
+  border-color: var(--ring);           /* #3157d5 */
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.15);
+}
+
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Primary button */
+.marketing-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(to bottom, #3157d5, var(--primary, #063cbc));
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);     /* 12px */
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(6, 60, 188, 0.25);
+  transition: opacity 150ms, transform 150ms;
+}
+
+.marketing-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.marketing-button.full {
+  width: 100%;
+}
+
+.auth-switch {
+  margin-top: 22px;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.auth-switch a {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.mobile-auth-logo {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  color: var(--foreground);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.mobile-auth-logo > span:last-child {
+  color: var(--primary);
+}
+
+/* Eyebrow label */
+.marketing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+}
+
+/* Logo mark */
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 720px) {
+  .auth-page {
+    display: block;
+    padding: 20px 0 40px;
+  }
+
+  .auth-aside {
+    display: none;
+  }
+
+  .auth-card {
+    margin: 40px auto;
+    padding: 30px 22px;
+  }
+
+  .mobile-auth-logo {
+    display: inline-flex;
+    margin-bottom: 35px;
+  }
+}
