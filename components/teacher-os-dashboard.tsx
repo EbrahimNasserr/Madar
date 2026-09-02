@@ -7,6 +7,7 @@ import { Check, LayoutDashboard, Users, CalendarDays, WalletCards, Menu, X, User
 import { AppProvider, useApp, type AppView } from '@/components/dashboard/app-context'
 import { Sidebar }        from '@/components/dashboard/sidebar'
 import { Topbar }         from '@/components/dashboard/topbar'
+import { QuickAddModal }  from '@/components/dashboard/quick-add-modal'
 import { DashboardHome }  from '@/components/dashboard/pages/dashboard-home'
 import { AttendancePage } from '@/components/dashboard/pages/attendance-page'
 import { StudentsPage }   from '@/components/dashboard/pages/students-page'
@@ -62,6 +63,9 @@ function DashboardShell() {
           )}
         </main>
       </div>
+
+      {/* Global modals */}
+      <QuickAddModal />
 
       {/* Mobile bottom navigation */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 flex bg-white/95 backdrop-blur-md border-t border-gray-200 py-1.5 px-3 items-center justify-around shadow-lg z-40">

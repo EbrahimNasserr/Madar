@@ -119,12 +119,12 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
         </div>
 
         {/* Landing link (mobile) */}
-        <button
+        {/* <button
           onClick={() => setCurrentView('landing' as any)}
           className="lg:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100"
         >
           <Home className="w-4 h-4" />
-        </button>
+        </button> */}
 
         {/* Mobile hamburger */}
         <button
