@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans_Arabic } from 'next/font/google'
+import StoreProvider from '@/components/providers/StoreProvider'
 import './globals.css'
 import './auth-styles.css'
 
@@ -128,7 +129,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ar" dir="rtl" className={`${ibmPlexSansArabic.variable} bg-background`}>
       <body className="antialiased font-arabic">
-        {children}
+        <StoreProvider>
+          {children}
+        </StoreProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
