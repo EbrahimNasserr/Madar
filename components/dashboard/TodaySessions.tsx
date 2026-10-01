@@ -16,10 +16,11 @@ const STATUS_STYLES = {
 }
 
 type TodaySessionsProps = {
-  sessions: Session[]
+  sessions: Session[] | null | undefined
 }
 
-export function TodaySessions({ sessions }: TodaySessionsProps) {
+export function TodaySessions({ sessions: sessionsProp }: TodaySessionsProps) {
+  const sessions = Array.isArray(sessionsProp) ? sessionsProp : []
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       {/* Header */}
@@ -45,8 +46,7 @@ export function TodaySessions({ sessions }: TodaySessionsProps) {
       ) : (
         <div className="divide-y divide-slate-100">
           {sessions.map((session) => {
-            const group =
-              typeof session.groupId === 'string' ? null : session.groupId
+            const group = session.group
 
             return (
               <div

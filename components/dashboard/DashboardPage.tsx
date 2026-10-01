@@ -77,6 +77,13 @@ export function DashboardPage() {
   const attendanceTrend = attendanceData?.data.trend ?? []
   const groups          = groupsData?.data.groups    ?? []
 
+  // Safe defaults — API may omit nested objects if data is empty
+  const todaySessions   = overview.todaySessions   ?? { total: 0, scheduled: 0, completed: 0, cancelled: 0 }
+  const todayAttendance = overview.todayAttendance ?? { present: 0, late: 0, absent: 0, total: 0, attendanceRate: 0 }
+  const financial       = overview.financial       ?? { expectedAmount: 0, collectedAmount: 0, outstandingAmount: 0, collectionRate: 0 }
+  const recentPayments  = overview.recentPayments  ?? []
+  const sessions        = overview.sessions        ?? []
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 p-6 lg:p-8" dir="rtl">
@@ -111,31 +118,31 @@ export function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardStatCard
           title="الطلاب النشطون"
-          value={overview.activeStudents}
-          description={`${overview.activeGroups} مجموعات نشطة`}
+          value={overview.activeStudents ?? 0}
+          description={`${overview.activeGroups ?? 0} مجموعات نشطة`}
           icon={<Users className="h-4 w-4" />}
           highlight="blue"
         />
         <DashboardStatCard
           title="حصص اليوم"
-          value={overview.todaySessions.total}
-          description={`${overview.todaySessions.scheduled} مجدولة · ${overview.todaySessions.completed} مكتملة`}
+          value={todaySessions.total}
+          description={`${todaySessions.scheduled} مجدولة · ${todaySessions.completed} مكتملة`}
           icon={<CalendarDays className="h-4 w-4" />}
           highlight="blue"
         />
         <DashboardStatCard
           title="نسبة الحضور"
-          value={`${overview.todayAttendance.attendanceRate.toFixed(0)}%`}
-          description={`${overview.todayAttendance.present} حاضر · ${overview.todayAttendance.absent} غائب`}
+          value={`${todayAttendance.attendanceRate.toFixed(0)}%`}
+          description={`${todayAttendance.present} حاضر · ${todayAttendance.absent} غائب`}
           icon={<TrendingUp className="h-4 w-4" />}
           highlight="green"
         />
         <DashboardStatCard
           title="نسبة التحصيل"
-          value={`${overview.financial.collectionRate.toFixed(0)}%`}
-          description={`متبقي ${overview.financial.outstandingAmount.toLocaleString('ar-EG')} ج.م`}
+          value={`${financial.collectionRate.toFixed(0)}%`}
+          description={`متبقي ${financial.outstandingAmount.toLocaleString('ar-EG')} ج.م`}
           icon={<Wallet className="h-4 w-4" />}
-          highlight={overview.financial.outstandingAmount > 0 ? 'amber' : 'green'}
+          highlight={financial.outstandingAmount > 0 ? 'amber' : 'green'}
         />
       </div>
 
@@ -143,25 +150,25 @@ export function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <DashboardStatCard
           title="المستحق هذا الشهر"
-          value={`${overview.financial.expectedAmount.toLocaleString('ar-EG')} ج.م`}
+          value={`${financial.expectedAmount.toLocaleString('ar-EG')} ج.م`}
         />
         <DashboardStatCard
           title="المحصّل"
-          value={`${overview.financial.collectedAmount.toLocaleString('ar-EG')} ج.م`}
+          value={`${financial.collectedAmount.toLocaleString('ar-EG')} ج.م`}
           highlight="green"
         />
         <DashboardStatCard
           title="المتبقي"
-          value={`${overview.financial.outstandingAmount.toLocaleString('ar-EG')} ج.م`}
-          highlight={overview.financial.outstandingAmount > 0 ? 'red' : undefined}
+          value={`${financial.outstandingAmount.toLocaleString('ar-EG')} ج.م`}
+          highlight={financial.outstandingAmount > 0 ? 'red' : undefined}
         />
       </div>
 
       {/* ── Today: sessions + attendance ── */}
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
-        <TodaySessions sessions={overview.sessions} />
+        <TodaySessions sessions={sessions} />
         <div className="lg:w-72">
-          <DashboardAttendanceSummary attendance={overview.todayAttendance} />
+          <DashboardAttendanceSummary attendance={todayAttendance} />
         </div>
       </div>
 
@@ -175,7 +182,7 @@ export function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
         <GroupsPerformance groups={groups} loading={groupsLoading} />
         <div className="lg:w-80">
-          <RecentPayments payments={overview.recentPayments} />
+          <RecentPayments payments={recentPayments} />
         </div>
       </div>
 

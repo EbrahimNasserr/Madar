@@ -2,27 +2,29 @@ import Link from 'next/link'
 import type { GroupPerformanceItem } from '@/src/lib/api/dashboardApi'
 
 type GroupsPerformanceProps = {
-  groups:   GroupPerformanceItem[]
+  groups:   GroupPerformanceItem[] | null | undefined
   loading?: boolean
 }
 
-function PercentBar({ value, color }: { value: number; color: string }) {
+function PercentBar({ value, color }: { value: number | null | undefined; color: string }) {
+  const safeValue = value ?? 0
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 flex-1 rounded-full bg-slate-100">
         <div
           className={`h-1.5 rounded-full ${color}`}
-          style={{ width: `${Math.min(100, value)}%` }}
+          style={{ width: `${Math.min(100, safeValue)}%` }}
         />
       </div>
       <span className="w-8 text-right text-xs font-semibold tabular-nums text-slate-700">
-        {value.toFixed(0)}%
+        {safeValue.toFixed(0)}%
       </span>
     </div>
   )
 }
 
-export function GroupsPerformance({ groups, loading }: GroupsPerformanceProps) {
+export function GroupsPerformance({ groups: groupsProp, loading }: GroupsPerformanceProps) {
+  const groups = Array.isArray(groupsProp) ? groupsProp : []
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       <div className="border-b border-slate-100 px-5 py-4">
@@ -53,8 +55,8 @@ export function GroupsPerformance({ groups, loading }: GroupsPerformanceProps) {
               </tr>
             </thead>
             <tbody>
-              {groups.map((group) => (
-                <tr key={group.groupId} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+              {groups.map((group, i) => (
+                <tr key={group.groupId ?? i} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="px-5 py-3">
                     <p className="font-semibold text-slate-900">{group.groupName}</p>
                     {group.subject && (

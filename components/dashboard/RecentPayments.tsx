@@ -17,10 +17,11 @@ const STATUS_LABELS: Record<Payment['status'], string> = {
 }
 
 type RecentPaymentsProps = {
-  payments: Payment[]
+  payments: Payment[] | null | undefined
 }
 
-export function RecentPayments({ payments }: RecentPaymentsProps) {
+export function RecentPayments({ payments: paymentsProp }: RecentPaymentsProps) {
+  const payments = Array.isArray(paymentsProp) ? paymentsProp : []
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       <div className="border-b border-slate-100 px-5 py-4">
