@@ -51,6 +51,9 @@ export const attendanceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { sessionId }) => [
         { type: "Attendance", id: `SESSION-${sessionId}` },
+        { type: "Dashboard",  id: "OVERVIEW"             },
+        { type: "Dashboard",  id: "ATTENDANCE_TREND"     },
+        { type: "Dashboard",  id: "GROUPS_PERFORMANCE"   },
       ],
     }),
   }),

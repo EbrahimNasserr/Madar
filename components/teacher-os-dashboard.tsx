@@ -2,14 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Check, LayoutDashboard, Users, CalendarDays, WalletCards, Menu, X, UserCheck, Layers, Award, LineChart, Settings, Home } from 'lucide-react'
+import { LayoutDashboard, Users, CalendarDays, WalletCards, Menu, X, UserCheck, Layers, Award, LineChart, Settings, Home } from 'lucide-react'
 
 import { AppProvider, useApp, type AppView } from '@/components/dashboard/app-context'
 import { Sidebar }        from '@/components/dashboard/sidebar'
 import { Topbar }         from '@/components/dashboard/topbar'
 import { QuickAddModal }  from '@/components/dashboard/quick-add-modal'
-import { DashboardHome }  from '@/components/dashboard/pages/dashboard-home'
 import { StudentsPage }   from '@/components/dashboard/pages/students-page'
 import { GroupsPage }     from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }   from '@/components/dashboard/pages/payments-page'
@@ -30,12 +28,6 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
   const router   = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [toast,      setToast]      = useState(false)
-
-  const saveToast = () => {
-    setToast(true)
-    window.setTimeout(() => setToast(false), 2600)
-  }
 
   // Derive the active page from the URL segment (e.g. /students → 'students', /dashboard → 'dashboard')
   // Derive page key from the first path segment.
@@ -69,8 +61,6 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Known top-level pages — only when not a nested route */}
-          {!isNested && pageKey === 'dashboard'  && <DashboardHome />}
-          {/* {!isNested && pageKey === 'attendance' && <AttendancePage onSaved={saveToast} />} */}
           {!isNested && pageKey === 'students'   && <StudentsPage />}
           {!isNested && pageKey === 'groups'     && <GroupsPage />}
           {!isNested && pageKey === 'payments'   && <PaymentsPage />}
@@ -79,8 +69,8 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
           {!isNested && (['reports', 'settings'] as PageKey[]).includes(pageKey) && (
             <SimplePage page={pageKey} />
           )}
-          {/* Nested / dynamic routes (e.g. /groups/[id], /sessions/[id]/attendance) */}
-          {(isNested || !KNOWN_PAGES.includes(pageKey as typeof KNOWN_PAGES[number])) && children}
+          {/* dashboard + nested/dynamic routes — render passed children */}
+          {(pageKey === 'dashboard' || isNested || !KNOWN_PAGES.includes(pageKey as typeof KNOWN_PAGES[number])) && children}
         </main>
       </div>
 
@@ -107,16 +97,6 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
       </nav>
 
       {/* Save toast */}
-      {toast && (
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed left-7 bottom-7 flex items-center gap-2 px-4 py-3 bg-[#111827] text-white rounded-xl shadow-xl text-[12px] z-50"
-        >
-          <Check className="w-4 h-4 text-[#12B76A]" />
-          تم حفظ الحضور بنجاح
-        </motion.div>
-      )}
     </div>
   )
 }

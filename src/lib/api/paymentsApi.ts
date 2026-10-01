@@ -99,7 +99,10 @@ export const paymentsApi = baseApi.injectEndpoints({
         body:   { billingPeriod },
       }),
       invalidatesTags: (_result, _error, { groupId, billingPeriod }) => [
-        { type: "Payments", id: `LEDGER-${groupId}-${billingPeriod}` },
+        { type: "Payments",  id: `LEDGER-${groupId}-${billingPeriod}` },
+        { type: "Dashboard", id: "OVERVIEW"           },
+        { type: "Dashboard", id: "FINANCIAL_TREND"    },
+        { type: "Dashboard", id: "GROUPS_PERFORMANCE" },
       ],
     }),
 
@@ -146,7 +149,7 @@ export const paymentsApi = baseApi.injectEndpoints({
         body:   { amount, paymentMethod, notes },
       }),
       invalidatesTags: (_result, _error, args) => {
-        const tags: { type: "Payments"; id: string }[] = []
+        const tags: { type: "Payments" | "Dashboard"; id: string }[] = []
 
         if (args.sessionId) {
           tags.push({ type: "Payments", id: `SESSION-${args.sessionId}` })
@@ -154,10 +157,13 @@ export const paymentsApi = baseApi.injectEndpoints({
         if (args.groupId && args.billingPeriod) {
           tags.push({ type: "Payments", id: `LEDGER-${args.groupId}-${args.billingPeriod}` })
         }
-        // Fallback: invalidate everything if no context provided
         if (tags.length === 0) {
           return ["Payments" as const]
         }
+        // Always refresh dashboard financial numbers after any payment
+        tags.push({ type: "Dashboard", id: "OVERVIEW"           })
+        tags.push({ type: "Dashboard", id: "FINANCIAL_TREND"    })
+        tags.push({ type: "Dashboard", id: "GROUPS_PERFORMANCE" })
         return tags
       },
     }),
