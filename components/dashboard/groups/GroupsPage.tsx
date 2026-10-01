@@ -19,7 +19,7 @@ export function GroupsPage() {
   const [deactivateTarget, setDeactivateTarget] = useState<Group | null>(null)
 
   return (
-    <section className="space-y-6 p-6 lg:p-8 animate-[appear_0.28s_ease-out]" dir="rtl">
+    <section className="space-y-6  animate-[appear_0.28s_ease-out]" dir="rtl">
       <GroupsHeader
         total={isLoading ? undefined : groups.length}
         onAdd={() => setCreateOpen(true)}

@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, Loader2, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -10,10 +10,15 @@ import {
   useSaveAttendanceSheetMutation,
   type AttendanceStatus,
 } from '@/src/lib/api/attendanceApi'
-import { formatArabicDate }   from '@/src/lib/date/formatDate'
+import {
+  useGetSessionPaymentsQuery,
+  type Payment,
+} from '@/src/lib/api/paymentsApi'
+import { formatArabicDate }              from '@/src/lib/date/formatDate'
 import { SESSION_STATUS_LABELS, SESSION_STATUS_STYLES } from '@/src/constants/sessionStatus'
-import { AttendanceRow }      from './AttendanceRow'
-import { AttendanceSummary }  from './AttendanceSummary'
+import { AttendanceRow }                 from './AttendanceRow'
+import { AttendanceSummary }             from './AttendanceSummary'
+import { SessionPaymentsSection }        from '@/components/payments/SessionPaymentsSection'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,16 +40,37 @@ export function AttendanceWorkspace({ params }: Props) {
   // ── Server state ────────────────────────────────────────────────────────────
   const { data: sessionData, isLoading: sessionLoading } = useGetSessionQuery(id)
   const { data: sheetData,   isLoading: sheetLoading }   = useGetAttendanceSheetQuery(id)
-  const [saveSheet, { isLoading: isSaving, isSuccess: isSaved }] =
+  const [saveSheet, { isLoading: isSaving, isSuccess: isSavedOnce }] =
     useSaveAttendanceSheetMutation()
 
-  // ── Draft attendance (local, not persisted until save) ─────────────────────
-  const [attendance, setAttendance] = useState<DraftAttendance[]>([])
+  // Derive group info from the session (backend may populate groupId as object)
+  const session      = sessionData?.data.session
+  const group        = session && typeof session.groupId === 'object' ? session.groupId : null
+  const isPerSession = group?.billingModel === 'per_session'
 
-  // Seed draft from server — default everyone to "present"
+  // Session payments — only fetched for per-session groups
+  const { data: paymentsData } = useGetSessionPaymentsQuery(id, { skip: !isPerSession })
+  const sessionPayments        = paymentsData?.data.payments ?? []
+
+  // O(1) lookup: studentId → Payment
+  const paymentByStudent = useMemo(() => {
+    const map = new Map<string, Payment>()
+    sessionPayments.forEach((p) => {
+      const sid = typeof p.studentId === 'string' ? p.studentId : p.studentId._id
+      map.set(sid, p)
+    })
+    return map
+  }, [sessionPayments])
+
+  // ── Draft attendance ────────────────────────────────────────────────────────
+  const [attendance,      setAttendance]      = useState<DraftAttendance[]>([])
+  const [attendanceSaved, setAttendanceSaved] = useState(false)
+
+  // Seed draft + detect already-saved attendance
   useEffect(() => {
     const students = sheetData?.data.students
     if (!students) return
+
     setAttendance(
       students.map((item) => ({
         studentId: item.student._id,
@@ -52,6 +78,9 @@ export function AttendanceWorkspace({ params }: Props) {
         note:      item.attendance?.note   ?? '',
       })),
     )
+
+    // If any student already has attendance, the sheet was saved before
+    setAttendanceSaved(students.some((item) => item.attendance !== null))
   }, [sheetData])
 
   // ── Handlers ────────────────────────────────────────────────────────────────
@@ -61,14 +90,19 @@ export function AttendanceWorkspace({ params }: Props) {
     )
 
   const handleSave = async () => {
-    await saveSheet({
-      sessionId:  id,
-      attendance: attendance.map((item) => ({
-        studentId: item.studentId,
-        status:    item.status,
-        note:      item.note || null,
-      })),
-    }).unwrap()
+    try {
+      await saveSheet({
+        sessionId:  id,
+        attendance: attendance.map((item) => ({
+          studentId: item.studentId,
+          status:    item.status,
+          note:      item.note || null,
+        })),
+      }).unwrap()
+      setAttendanceSaved(true)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   // ── Loading ─────────────────────────────────────────────────────────────────
@@ -81,19 +115,20 @@ export function AttendanceWorkspace({ params }: Props) {
     )
   }
 
-  const session  = sessionData?.data.session
   const students = sheetData?.data.students ?? []
+  const groupId  = session
+    ? (typeof session.groupId === 'string' ? session.groupId : session.groupId._id)
+    : ''
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8" dir="rtl">
+    <div className="flex flex-col gap-6 p-4" dir="rtl">
 
       {/* ── Back + session info ── */}
       <div className="space-y-4">
-        {/* Back link */}
         {session && (
           <Link
-            href={`/groups/${typeof session.groupId === 'string' ? session.groupId : session.groupId._id}`}
+            href={`/groups/${groupId}`}
             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
@@ -101,7 +136,6 @@ export function AttendanceWorkspace({ params }: Props) {
           </Link>
         )}
 
-        {/* Session card */}
         {session && (
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -116,9 +150,7 @@ export function AttendanceWorkspace({ params }: Props) {
                   {session.startTime} → {session.endTime}
                 </p>
               </div>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${SESSION_STATUS_STYLES[session.status]}`}
-              >
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${SESSION_STATUS_STYLES[session.status]}`}>
                 {SESSION_STATUS_LABELS[session.status]}
               </span>
             </div>
@@ -163,21 +195,26 @@ export function AttendanceWorkspace({ params }: Props) {
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3157D5] py-3.5 text-sm font-bold text-white hover:bg-[#243FA3] disabled:opacity-50 transition"
           >
             {isSaving ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                جارٍ حفظ الحضور...
-              </>
-            ) : isSaved ? (
-              <>
-                <CheckCircle className="h-4 w-4" />
-                تم الحفظ
-              </>
+              <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ حفظ الحضور...</>
+            ) : (attendanceSaved || isSavedOnce) ? (
+              <><CheckCircle className="h-4 w-4" /> تحديث الحضور</>
             ) : (
               `حفظ حضور ${attendance.length} طالب`
             )}
           </button>
         </div>
       </div>
+
+      {/* ── Session payments (per-session groups only, after attendance saved) ── */}
+      {isPerSession && attendanceSaved && group && (
+        <SessionPaymentsSection
+          sessionId={id}
+          students={students}
+          attendance={attendance}
+          paymentByStudent={paymentByStudent}
+          pricePerSession={group.pricePerSession ?? 0}
+        />
+      )}
 
     </div>
   )
