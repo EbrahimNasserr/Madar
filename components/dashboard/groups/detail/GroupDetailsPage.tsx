@@ -8,13 +8,14 @@ import {
   useCreateSessionMutation,
   type CreateSessionInput,
 } from '@/src/lib/api/sessionsApi'
-import { getApiErrorMessage }   from '@/components/dashboard/groups/shared/constants'
+import { getApiErrorMessage }        from '@/components/dashboard/groups/shared/constants'
 import { Modal, ModalBody, ModalError } from '@/components/ui/Modal'
-import { SessionForm }          from '@/components/sessions/SessionForm'
-import { GroupDetailHeader }    from './GroupDetailHeader'
-import { GroupSchedule }        from './GroupSchedule'
-import { GroupStudentsList }    from './GroupStudentsList'
-import { GroupSessionsList }    from './GroupSessionsList'
+import { SessionForm }               from '@/components/sessions/SessionForm'
+import { MonthlyPaymentLedger }      from '@/components/payments/MonthlyPaymentLedger'
+import { GroupDetailHeader }         from './GroupDetailHeader'
+import { GroupSchedule }             from './GroupSchedule'
+import { GroupStudentsList }         from './GroupStudentsList'
+import { GroupSessionsList }         from './GroupSessionsList'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -70,7 +71,7 @@ export function GroupDetailsPage({ params }: Props) {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6 p-6 lg:p-8" dir="rtl">
+    <div className="space-y-6" dir="rtl">
       <GroupDetailHeader
         group={group}
         enrolledCount={enrolledStudents.length}
@@ -85,6 +86,18 @@ export function GroupDetailsPage({ params }: Props) {
         isError={sessionsError}
         onAdd={() => setCreateSessionOpen(true)}
       />
+
+      {/* Payments — conditional on billing model */}
+      {group.billingModel === 'monthly' ? (
+        <MonthlyPaymentLedger groupId={id} />
+      ) : (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="font-bold text-slate-900">المدفوعات</h2>
+          <p className="mt-2 text-sm text-slate-500">
+            يتم احتساب رسوم هذه المجموعة لكل حصة من داخل شاشة الحضور.
+          </p>
+        </div>
+      )}
 
       <GroupStudentsList
         groupId={id}

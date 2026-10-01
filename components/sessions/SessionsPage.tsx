@@ -116,7 +116,7 @@ export function SessionsPage() {
   const activeGroups = groups.filter((g) => g.status === 'active')
 
   return (
-    <div className="space-y-6 p-6 lg:p-8" dir="rtl">
+    <div className="space-y-6" dir="rtl">
       {/* Header */}
       <div>
         <p className="text-[11px] font-bold text-[#3157D5] tracking-wide uppercase mb-1">

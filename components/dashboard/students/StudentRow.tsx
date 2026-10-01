@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Pencil, Trash2 } from 'lucide-react'
 import type { Student } from '@/src/lib/api/studentsApi'
 import { Avatar } from './shared/Avatar'
@@ -18,9 +19,12 @@ export function StudentRow({ student, onEdit, onDelete }: StudentRowProps) {
         <div className="flex items-center gap-3 min-w-0">
           <Avatar name={student.firstName} />
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900 truncate">
+            <Link
+              href={`/students/${student._id}`}
+              className="font-semibold text-slate-900 hover:text-[#3157D5] transition truncate block"
+            >
               {student.firstName} {student.lastName}
-            </p>
+            </Link>
             {student.parentName && (
               <p className="text-xs text-slate-400 truncate">
                 ولي الأمر: {student.parentName}
