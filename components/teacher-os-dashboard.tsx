@@ -20,9 +20,12 @@ import type { PageKey }   from '@/components/dashboard/types'
 
 const IS_PRO = false
 
+// Known top-level page segments that the shell renders internally
+const KNOWN_PAGES = ['dashboard', 'attendance', 'students', 'groups', 'payments', 'quizzes', 'sessions', 'reports', 'settings'] as const
+
 // ─── Inner shell (needs context) ─────────────────────────────────────────────
 
-function DashboardShell() {
+function DashboardShell({ children }: { children?: React.ReactNode }) {
   const { plan } = useApp()
   const router   = useRouter()
   const pathname = usePathname()
@@ -60,6 +63,7 @@ function DashboardShell() {
         <Topbar onMenuToggle={() => setMobileOpen(o => !o)} />
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Known top-level pages */}
           {pageKey === 'dashboard'  && <DashboardHome />}
           {pageKey === 'attendance' && <AttendancePage onSaved={saveToast} />}
           {pageKey === 'students'   && <StudentsPage />}
@@ -69,6 +73,8 @@ function DashboardShell() {
           {(['sessions', 'reports', 'settings'] as PageKey[]).includes(pageKey) && (
             <SimplePage page={pageKey} />
           )}
+          {/* Nested / dynamic routes (e.g. /groups/[id]) — render passed children */}
+          {!KNOWN_PAGES.includes(pageKey as typeof KNOWN_PAGES[number]) && children}
         </main>
       </div>
 
@@ -192,10 +198,10 @@ function MobileMoreButton() {
 
 // ─── Root export (wraps with provider) ───────────────────────────────────────
 
-export default function MadarDashboard() {
+export default function MadarDashboard({ children }: { children?: React.ReactNode }) {
   return (
     <AppProvider>
-      <DashboardShell />
+      <DashboardShell>{children}</DashboardShell>
     </AppProvider>
   )
 }
