@@ -23,7 +23,7 @@ const navItems: { id: AppView; label: string; icon: React.ElementType; badge?: '
   { id: 'students',   label: 'الطلاب',           icon: Users,        badge: 'students' },
   { id: 'groups',     label: 'المجموعات',        icon: Layers,       badge: 'groups'   },
   { id: 'sessions',   label: 'الحصص',            icon: CalendarDays  },
-  { id: 'attendance', label: 'الحضور والغياب',   icon: UserCheck     },
+  // { id: 'attendance', label: 'الحضور والغياب',   icon: UserCheck     },
   { id: 'payments',   label: 'المصروفات',        icon: WalletCards   },
   { id: 'quizzes',    label: 'الاختبارات',       icon: Award,        isPro: true       },
   { id: 'reports',    label: 'التقارير',         icon: LineChart      },

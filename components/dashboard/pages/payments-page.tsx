@@ -1,7 +1,11 @@
-import { FileText } from 'lucide-react'
-import { studentNames } from '../data'
+import { FileText, Check, X, Wallet } from 'lucide-react'
 import { StatCard } from '../stat-card'
-import { Check, X, Wallet } from 'lucide-react'
+
+// Placeholder names — this page will be replaced with a real payments list
+const studentNames = [
+  'أحمد محمود', 'محمد علي', 'يوسف حسن',
+  'عمر خالد',   'علي أحمد', 'مريم محمد',
+]
 
 export function PaymentsPage() {
   return (

@@ -10,10 +10,10 @@ import { Sidebar }        from '@/components/dashboard/sidebar'
 import { Topbar }         from '@/components/dashboard/topbar'
 import { QuickAddModal }  from '@/components/dashboard/quick-add-modal'
 import { DashboardHome }  from '@/components/dashboard/pages/dashboard-home'
-import { AttendancePage } from '@/components/dashboard/pages/attendance-page'
 import { StudentsPage }   from '@/components/dashboard/pages/students-page'
 import { GroupsPage }     from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }   from '@/components/dashboard/pages/payments-page'
+import { SessionsPage }   from '@/components/sessions/SessionsPage'
 import { QuizzesPage, ProGate } from '@/components/dashboard/pages/quizzes-page'
 import { SimplePage }     from '@/components/dashboard/pages/simple-page'
 import type { PageKey }   from '@/components/dashboard/types'
@@ -38,8 +38,13 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
   }
 
   // Derive the active page from the URL segment (e.g. /students → 'students', /dashboard → 'dashboard')
-  const segment = pathname.split('/').pop() ?? 'dashboard'
-  const pageKey = (segment === '' ? 'dashboard' : segment) as PageKey
+  // Derive page key from the first path segment.
+  // If there are sub-segments (nested routes like /groups/[id] or /sessions/[id]/attendance),
+  // we treat it as a child route and render the passed children prop instead.
+  const segments   = pathname.split('/').filter(Boolean)
+  const segment    = segments[0] ?? 'dashboard'
+  const pageKey    = (segment === '' ? 'dashboard' : segment) as PageKey
+  const isNested   = segments.length > 1   // e.g. /groups/abc or /sessions/abc/attendance
 
   const go = (view: AppView) => {
     router.push(view === 'landing' ? '/' : view === 'dashboard' ? '/dashboard' : `/${view}`)
@@ -63,18 +68,19 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
         <Topbar onMenuToggle={() => setMobileOpen(o => !o)} />
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Known top-level pages */}
-          {pageKey === 'dashboard'  && <DashboardHome />}
-          {pageKey === 'attendance' && <AttendancePage onSaved={saveToast} />}
-          {pageKey === 'students'   && <StudentsPage />}
-          {pageKey === 'groups'     && <GroupsPage />}
-          {pageKey === 'payments'   && <PaymentsPage />}
-          {pageKey === 'quizzes'    && (IS_PRO || plan === 'pro' ? <QuizzesPage /> : <ProGate />)}
-          {(['sessions', 'reports', 'settings'] as PageKey[]).includes(pageKey) && (
+          {/* Known top-level pages — only when not a nested route */}
+          {!isNested && pageKey === 'dashboard'  && <DashboardHome />}
+          {/* {!isNested && pageKey === 'attendance' && <AttendancePage onSaved={saveToast} />} */}
+          {!isNested && pageKey === 'students'   && <StudentsPage />}
+          {!isNested && pageKey === 'groups'     && <GroupsPage />}
+          {!isNested && pageKey === 'payments'   && <PaymentsPage />}
+          {!isNested && pageKey === 'sessions'   && <SessionsPage />}
+          {!isNested && pageKey === 'quizzes'    && (IS_PRO || plan === 'pro' ? <QuizzesPage /> : <ProGate />)}
+          {!isNested && (['reports', 'settings'] as PageKey[]).includes(pageKey) && (
             <SimplePage page={pageKey} />
           )}
-          {/* Nested / dynamic routes (e.g. /groups/[id]) — render passed children */}
-          {!KNOWN_PAGES.includes(pageKey as typeof KNOWN_PAGES[number]) && children}
+          {/* Nested / dynamic routes (e.g. /groups/[id], /sessions/[id]/attendance) */}
+          {(isNested || !KNOWN_PAGES.includes(pageKey as typeof KNOWN_PAGES[number])) && children}
         </main>
       </div>
 

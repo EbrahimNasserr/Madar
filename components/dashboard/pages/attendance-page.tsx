@@ -3,8 +3,9 @@
 import { useMemo, useState } from 'react'
 import { Check, ChevronLeft, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { studentNames } from '../data'
 import type { AttendanceStatus, PaymentStatus, StudentRow } from '../types'
+
+const studentNames = ["asdsadsad" , "asdasdasd"]
 
 const ATTENDANCE_CYCLE: Record<AttendanceStatus, AttendanceStatus> = {
   'حاضر': 'غائب', 'غائب': 'متأخر', 'متأخر': 'معذور', 'معذور': 'حاضر',

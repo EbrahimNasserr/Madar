@@ -1,11 +1,20 @@
 'use client'
 
-import { use, useMemo } from 'react'
+import { use, useMemo, useState } from 'react'
 import { useGetGroupQuery, useGetGroupStudentsQuery } from '@/src/lib/api/groupsApi'
-import { useGetStudentsQuery } from '@/src/lib/api/studentsApi'
-import { GroupDetailHeader } from './GroupDetailHeader'
-import { GroupSchedule }     from './GroupSchedule'
-import { GroupStudentsList } from './GroupStudentsList'
+import { useGetStudentsQuery }    from '@/src/lib/api/studentsApi'
+import {
+  useGetGroupSessionsQuery,
+  useCreateSessionMutation,
+  type CreateSessionInput,
+} from '@/src/lib/api/sessionsApi'
+import { getApiErrorMessage }   from '@/components/dashboard/groups/shared/constants'
+import { Modal, ModalBody, ModalError } from '@/components/ui/Modal'
+import { SessionForm }          from '@/components/sessions/SessionForm'
+import { GroupDetailHeader }    from './GroupDetailHeader'
+import { GroupSchedule }        from './GroupSchedule'
+import { GroupStudentsList }    from './GroupStudentsList'
+import { GroupSessionsList }    from './GroupSessionsList'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -17,20 +26,38 @@ export function GroupDetailsPage({ params }: Props) {
   // ── Queries ────────────────────────────────────────────────────────────────
   const { data: groupData,    isLoading: groupLoading }    = useGetGroupQuery(id)
   const { data: studentsData, isLoading: studentsLoading } = useGetGroupStudentsQuery(id)
+  const { data: sessionsData, isLoading: sessionsLoading, isError: sessionsError } =
+    useGetGroupSessionsQuery(id)
 
-  // Fetch all active students so we can offer ones not yet in the group
+  // All active students for the "add to group" picker
   const { data: allStudentsData } = useGetStudentsQuery({
     page: 1, limit: 100, status: 'active',
   })
 
-  const group           = groupData?.data.group
+  // ── Derived data ───────────────────────────────────────────────────────────
+  const group            = groupData?.data.group
   const enrolledStudents = studentsData?.data.students ?? []
+  const sessions         = sessionsData?.data.sessions ?? []
 
-  // Remove already-enrolled students from the picker
   const availableStudents = useMemo(() => {
     const enrolledIds = new Set(enrolledStudents.map((item) => item.student._id))
     return (allStudentsData?.data.students ?? []).filter((s) => !enrolledIds.has(s._id))
   }, [allStudentsData, enrolledStudents])
+
+  // ── Create session modal ───────────────────────────────────────────────────
+  const [createSessionOpen, setCreateSessionOpen] = useState(false)
+  const [sessionError,      setSessionError]      = useState<string | null>(null)
+  const [createSession, { isLoading: isCreatingSession }] = useCreateSessionMutation()
+
+  const handleCreateSession = async (data: CreateSessionInput) => {
+    setSessionError(null)
+    try {
+      await createSession(data).unwrap()
+      setCreateSessionOpen(false)
+    } catch (err) {
+      setSessionError(getApiErrorMessage(err))
+    }
+  }
 
   // ── Loading / not found ────────────────────────────────────────────────────
   if (groupLoading || !group) {
@@ -51,12 +78,39 @@ export function GroupDetailsPage({ params }: Props) {
 
       <GroupSchedule schedule={group.schedule} />
 
+      <GroupSessionsList
+        groupId={id}
+        sessions={sessions}
+        isLoading={sessionsLoading}
+        isError={sessionsError}
+        onAdd={() => setCreateSessionOpen(true)}
+      />
+
       <GroupStudentsList
         groupId={id}
         enrolledStudents={enrolledStudents}
         availableStudents={availableStudents}
         isLoading={studentsLoading}
       />
+
+      {/* ── Create session modal ── */}
+      {createSessionOpen && (
+        <Modal
+          title="إنشاء حصة جديدة"
+          onClose={() => setCreateSessionOpen(false)}
+          size="md"
+        >
+          <ModalBody>
+            <ModalError message={sessionError} />
+            <SessionForm
+              group={group}
+              isSubmitting={isCreatingSession}
+              onSubmit={handleCreateSession}
+              onCancel={() => setCreateSessionOpen(false)}
+            />
+          </ModalBody>
+        </Modal>
+      )}
     </div>
   )
 }

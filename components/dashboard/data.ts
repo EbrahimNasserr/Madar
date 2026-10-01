@@ -10,20 +10,15 @@ export const navItems: {
   icon:  typeof Home
   pro?:  boolean
 }[] = [
-  { key: 'dashboard',  label: 'الرئيسية',    icon: Home          },
-  { key: 'students',   label: 'الطلاب',       icon: Users         },
-  { key: 'groups',     label: 'المجموعات',    icon: LayoutGrid    },
-  { key: 'sessions',   label: 'الحصص',        icon: CalendarDays  },
-  { key: 'attendance', label: 'الحضور',       icon: ClipboardCheck},
-  { key: 'payments',   label: 'المدفوعات',    icon: Wallet        },
+  { key: 'dashboard',  label: 'الرئيسية',    icon: Home           },
+  { key: 'students',   label: 'الطلاب',       icon: Users          },
+  { key: 'groups',     label: 'المجموعات',    icon: LayoutGrid     },
+  { key: 'sessions',   label: 'الحصص',        icon: CalendarDays   },
+  { key: 'attendance', label: 'الحضور',       icon: ClipboardCheck },
+  { key: 'payments',   label: 'المدفوعات',    icon: Wallet         },
   { key: 'quizzes',    label: 'الاختبارات',   icon: BookOpen, pro: true },
-  { key: 'reports',    label: 'التقارير',     icon: FileText      },
-  { key: 'settings',   label: 'الإعدادات',   icon: Settings      },
-]
-
-export const studentNames = [
-  'أحمد محمود', 'محمد علي', 'يوسف حسن', 'عمر خالد',
-  'علي أحمد',   'مريم محمد', 'سلمى أحمد', 'مصطفى نبيل',
+  { key: 'reports',    label: 'التقارير',     icon: FileText       },
+  { key: 'settings',   label: 'الإعدادات',   icon: Settings       },
 ]
 
 export const chartData = [
