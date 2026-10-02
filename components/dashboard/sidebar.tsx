@@ -43,7 +43,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
 
   const { data: subscriptionData } = useGetSubscriptionQuery()
-  const activeFeatures = subscriptionData?.data.features ?? []
+  const activeFeatures = subscriptionData?.data.subscription.features ?? []
 
   const currentView = (pathname.split('/').filter(Boolean)[0] ?? 'dashboard') as AppView
 

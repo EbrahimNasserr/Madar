@@ -36,7 +36,7 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
 
   // ── Real subscription / plan ──────────────────────────────────────────────
   const { data: subData } = useGetSubscriptionQuery()
-  const plan = subData?.data?.plan ?? 'basic'
+  const plan = subData?.data?.subscription.plan ?? 'basic'
 
   const [isNotifOpen, setIsNotifOpen] = useState(false)
 

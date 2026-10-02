@@ -15,7 +15,6 @@ import { StudentsPage }  from '@/components/dashboard/pages/students-page'
 import { GroupsPage }    from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }  from '@/components/dashboard/pages/payments-page'
 import { SessionsPage }  from '@/components/dashboard/sessions/SessionsPage'
-import { QuizzesPage, ProGate } from '@/components/dashboard/pages/quizzes-page'
 import { SimplePage }    from '@/components/dashboard/pages/simple-page'
 import type { PageKey }  from '@/components/dashboard/types'
 
@@ -61,9 +60,7 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
           {!isNested && pageKey === 'groups'   && <GroupsPage />}
           {!isNested && pageKey === 'payments' && <PaymentsPage />}
           {!isNested && pageKey === 'sessions' && <SessionsPage />}
-          {!isNested && pageKey === 'quizzes'  && (
-            plan === 'pro' ? <QuizzesPage /> : <ProGate />
-          )}
+          {!isNested && pageKey === 'quizzes'  && children}
           {!isNested && (pageKey === 'reports' || pageKey === 'settings') && (
             <SimplePage page={pageKey} />
           )}

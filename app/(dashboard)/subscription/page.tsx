@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
     );
   }
 
-  const subscription = data?.data;
+  const subscription = data?.data.subscription;
 
   if (!subscription) return null;
 

@@ -13,19 +13,23 @@ export type Feature =
   | "grades"
   | "advanced_analytics";
 
+export type SubscriptionData = {
+  plan: "basic" | "pro";
+  subscriptionPlan: "basic" | "pro";
+  status: string;
+  features: Feature[];
+  pro: {
+    enabled: boolean;
+    expiresAt: string | null;
+    trialEndsAt: string | null;
+    cancelAtPeriodEnd: boolean;
+  };
+};
+
 export type SubscriptionResponse = {
   success: boolean;
   data: {
-    plan: "basic" | "pro";
-    subscriptionPlan: "basic" | "pro";
-    status: string;
-    features: Feature[];
-    pro: {
-      enabled: boolean;
-      expiresAt: string | null;
-      trialEndsAt: string | null;
-      cancelAtPeriodEnd: boolean;
-    };
+    subscription: SubscriptionData;
   };
 };
 

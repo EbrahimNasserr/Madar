@@ -4,10 +4,10 @@ import type { Feature } from "@/src/lib/api/subscriptionApi";
 export function useFeature(feature: Feature) {
   const { data, isLoading } = useGetSubscriptionQuery();
 
-  const subscription = data?.data;
+  const subscription = data?.data.subscription;
 
   const hasFeature =
-    subscription?.features.includes(feature) ?? false;
+    subscription?.features?.includes(feature) ?? false;
 
   return {
     hasFeature,
