@@ -3,38 +3,33 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/src/lib/store/hooks";
+import { ONBOARDING_KEY } from "@/components/onboarding/OnboardingWizard";
 
 export default function DashboardLayout({
   children,
 }: {
-  children:
-    React.ReactNode;
+  children: React.ReactNode;
 }) {
-  const router =
-    useRouter();
+  const router = useRouter();
 
-  const {
-    user,
-    initialized,
-  } = useAppSelector(
-    (state) =>
-      state.auth
-  );
+  const { user, initialized } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (
-      initialized &&
-      !user
-    ) {
-      router.replace(
-        "/login"
-      );
+    if (!initialized) return;
+
+    if (!user) {
+      router.replace("/login");
+      return;
     }
-  }, [
-    initialized,
-    user,
-    router,
-  ]);
+
+    // Redirect new users to onboarding until they complete (or skip) it
+    if (typeof window !== "undefined") {
+      const done = localStorage.getItem(ONBOARDING_KEY);
+      if (!done) {
+        router.replace("/onboarding");
+      }
+    }
+  }, [initialized, user, router]);
 
   if (!initialized) {
     return (
@@ -47,9 +42,7 @@ export default function DashboardLayout({
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background">

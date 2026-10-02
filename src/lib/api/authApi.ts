@@ -7,6 +7,14 @@ type LoginRequest = {
   password: string;
 };
 
+type RegisterRequest = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  password: string;
+};
+
 type AuthUser = {
   _id: string;
   firstName: string;
@@ -15,7 +23,7 @@ type AuthUser = {
   phone?: string;
 };
 
-type LoginResponse = {
+export type AuthResponse = {
   success: boolean;
   data: {
     user: AuthUser;
@@ -33,9 +41,17 @@ type GetMeResponse = {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    login: builder.mutation<AuthResponse, LoginRequest>({
       query: (body) => ({
         url: "/auth/login",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    register: builder.mutation<AuthResponse, RegisterRequest>({
+      query: (body) => ({
+        url: "/auth/register",
         method: "POST",
         body,
       }),
@@ -56,4 +72,9 @@ export const authApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useGetMeQuery, useLogoutMutation } = authApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetMeQuery,
+  useLogoutMutation,
+} = authApi;

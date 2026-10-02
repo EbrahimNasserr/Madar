@@ -1,17 +1,21 @@
-import type { Metadata } from 'next'
-import MadarAuth from '@/components/teacher-os-auth'
+import type { Metadata } from "next";
+import RegisterForm from "@/components/auth/RegisterForm";
 
 export const metadata: Metadata = {
-  title: 'إنشاء حساب',
-  description: 'انضم لمدار مجانًا وابدأ تنظيم حصصك وطلابك ومدفوعاتك من اليوم.',
+  title: "إنشاء حساب",
+  description:
+    "انضم لمدار مجانًا وابدأ تنظيم حصصك وطلابك ومدفوعاتك من اليوم.",
   robots: { index: false, follow: false },
-  alternates: { canonical: '/signup' },
+  alternates: { canonical: "/signup" },
   openGraph: {
-    title: 'إنشاء حساب | مدار',
-    description: 'انضم لمدار مجانًا وابدأ تنظيم حصصك وطلابك ومدفوعاتك من اليوم.',
-    url: 'https://madar-edu.vercel.app/signup',
-    type: 'website',
+    title: "إنشاء حساب | مدار",
+    description:
+      "انضم لمدار مجانًا وابدأ تنظيم حصصك وطلابك ومدفوعاتك من اليوم.",
+    url: "https://madar-edu.vercel.app/signup",
+    type: "website",
   },
-}
+};
 
-export default function SignupPage() { return <MadarAuth signup /> }
+export default function SignupPage() {
+  return <RegisterForm />;
+}
