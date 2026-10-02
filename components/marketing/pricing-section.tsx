@@ -3,7 +3,13 @@ import React, { useState } from 'react';
 import { Check, X, Sparkles, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export const PricingSection: React.FC = () => {
+type Plan = 'basic' | 'pro' | null;
+
+interface PricingSectionProps {
+  plan?: Plan;
+}
+
+export const PricingSection: React.FC<PricingSectionProps> = ({ plan = null }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   return (
@@ -11,13 +17,13 @@ export const PricingSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold text-[#3157D5] uppercase tracking-wider px-3 py-1 bg-[#EAF0FF] rounded-full border border-[#3157D5]/20">
-            خطط واضحة ومناسبة
+            14 يوم مجانًا — بدون بطاقة ائتمان
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#111827] mt-3">
             اختر الباقة المناسبة لحجم تدريسك.
           </h2>
           <p className="text-base text-[#667085] mt-3 font-normal">
-            ابدأ بالخطة الأساسية مجاناً لإدارة يومك، أو قم بالترقية لـ Pro لمتابعة درجات وتحليلات طلابك.
+            ابدأ بتجربة مجانية 14 يومًا وجرّب كل المميزات، ثم اختر الخطة التي تناسبك.
           </p>
 
           <div className="inline-flex items-center gap-2 p-1.5 bg-white rounded-2xl border border-gray-200 mt-8 shadow-2xs">
@@ -56,7 +62,10 @@ export const PricingSection: React.FC = () => {
                 <span className="px-3 py-1 rounded-full bg-gray-100 text-[#667085] text-xs font-bold">Basic</span>
               </div>
 
-              <h3 className="text-3xl font-black text-[#111827] mb-2">مجانًا</h3>
+              <h3 className="text-3xl font-black text-[#111827] mb-2">
+                {billingCycle === 'monthly' ? '199' : '159'}
+                <span className="text-base font-semibold text-[#667085] mr-1">ج.م / شهر</span>
+              </h3>
               <p className="text-xs text-[#667085] mb-6">
                 للمدرسين الراغبين في تنظيم الحضور والمجموعات والمصروفات اليومية.
               </p>
@@ -89,12 +98,21 @@ export const PricingSection: React.FC = () => {
             </div>
 
             <div className="pt-8">
-              <Link
-                href="/signup"
-                className="w-full py-4 bg-[#F7F8FC] hover:bg-gray-100 text-[#111827] font-bold rounded-2xl border border-gray-200 transition-all text-sm flex items-center justify-center"
-              >
-                ابدأ مجانًا
-              </Link>
+              {plan === 'basic' ? (
+                <button
+                  disabled
+                  className="w-full py-4 bg-[#F7F8FC] text-[#667085] font-bold rounded-2xl border border-gray-200 text-sm flex items-center justify-center cursor-default"
+                >
+                  خطتك الحالية
+                </button>
+              ) : (
+                <Link
+                  href="/signup"
+                  className="w-full py-4 bg-[#F7F8FC] hover:bg-gray-100 text-[#111827] font-bold rounded-2xl border border-gray-200 transition-all text-sm flex items-center justify-center"
+                >
+                  ابدأ تجربتك المجانية
+                </Link>
+              )}
             </div>
           </div>
 
@@ -117,7 +135,7 @@ export const PricingSection: React.FC = () => {
 
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-4xl font-black text-[#111827]">
-                  {billingCycle === 'monthly' ? '199' : '159'}
+                  {billingCycle === 'monthly' ? '349' : '279'}
                 </span>
                 <span className="text-sm font-bold text-[#667085]">ج.م / شهرياً</span>
               </div>
@@ -146,13 +164,30 @@ export const PricingSection: React.FC = () => {
             </div>
 
             <div className="pt-8">
-              <Link
-                href="/signup"
-                className="w-full py-4 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-2xl shadow-lg shadow-[#3157D5]/25 hover:shadow-xl transition-all text-sm flex items-center justify-center gap-2 group"
-              >
-                <span>ابدأ مع Pro الآن</span>
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              </Link>
+              {plan === 'pro' ? (
+                <button
+                  disabled
+                  className="w-full py-4 bg-[#EAF0FF] text-[#3157D5] font-bold rounded-2xl border border-[#3157D5]/30 text-sm flex items-center justify-center cursor-default"
+                >
+                  خطتك الحالية
+                </button>
+              ) : plan === 'basic' ? (
+                <Link
+                  href="/subscription"
+                  className="w-full py-4 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-2xl shadow-lg shadow-[#3157D5]/25 hover:shadow-xl transition-all text-sm flex items-center justify-center gap-2 group"
+                >
+                  <span>الترقية إلى Pro</span>
+                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                </Link>
+              ) : (
+                <Link
+                  href="/signup"
+                  className="w-full py-4 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-2xl shadow-lg shadow-[#3157D5]/25 hover:shadow-xl transition-all text-sm flex items-center justify-center gap-2 group"
+                >
+                  <span>ابدأ تجربتك المجانية</span>
+                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                </Link>
+              )}
             </div>
           </div>
         </div>

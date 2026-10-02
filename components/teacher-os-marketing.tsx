@@ -17,9 +17,10 @@ import { Footer }                  from '@/components/marketing/footer'
 
 interface MadarMarketingProps {
   pricing?: boolean
+  plan?: 'basic' | 'pro' | null
 }
 
-export default function MadarMarketing({ pricing = false }: MadarMarketingProps) {
+export default function MadarMarketing({ pricing = false, plan = null }: MadarMarketingProps) {
   return (
     <div className="bg-background text-foreground font-arabic" dir="rtl">
       <Navbar />
@@ -41,7 +42,7 @@ export default function MadarMarketing({ pricing = false }: MadarMarketingProps)
             </div>
           </section>
 
-          <PricingSection />
+          <PricingSection plan={plan} />
           <FaqSection />
           <CtaSection />
           <Footer />
@@ -58,7 +59,7 @@ export default function MadarMarketing({ pricing = false }: MadarMarketingProps)
           <GroupSpotlight />
           <StudentProfileSpotlight />
           <ProFeatureSection />
-          <PricingSection />
+          <PricingSection plan={plan} />
           <TestimonialsSection />
           <FaqSection />
           <CtaSection />

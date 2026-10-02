@@ -11,6 +11,7 @@ import { AppProvider, type AppView } from '@/components/dashboard/app-context'
 import { Sidebar }       from '@/components/dashboard/sidebar'
 import { Topbar }        from '@/components/dashboard/topbar'
 import { QuickAddModal } from '@/components/dashboard/quick-add-modal'
+import { TrialBanner }   from '@/components/dashboard/subscription/TrialBanner'
 import { StudentsPage }  from '@/components/dashboard/pages/students-page'
 import { GroupsPage }    from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }  from '@/components/dashboard/pages/payments-page'
@@ -54,6 +55,7 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 min-w-0 pb-20 lg:pb-8">
         <Topbar onMenuToggle={() => setMobileOpen((o) => !o)} />
+        <TrialBanner />
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {!isNested && pageKey === 'students'  && <StudentsPage />}

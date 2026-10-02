@@ -14,16 +14,23 @@ export type Feature =
   | "advanced_analytics";
 
 export type SubscriptionData = {
-  plan: "basic" | "pro";
-  subscriptionPlan: "basic" | "pro";
   status: string;
+  plan: "basic" | "pro";
+  access: boolean;
+  billingCycle: string | null;
   features: Feature[];
-  pro: {
-    enabled: boolean;
-    expiresAt: string | null;
-    trialEndsAt: string | null;
-    cancelAtPeriodEnd: boolean;
+  trial: {
+    active: boolean;
+    startsAt: string | null;
+    endsAt: string | null;
+    daysRemaining: number;
   };
+  currentPeriod: {
+    startsAt: string | null;
+    endsAt: string | null;
+  };
+  cancelAtPeriodEnd: boolean;
+  nextPlan: string | null;
 };
 
 export type SubscriptionResponse = {
