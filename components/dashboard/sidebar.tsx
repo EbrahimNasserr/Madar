@@ -16,14 +16,17 @@ import {
 import { useRouter, usePathname } from 'next/navigation'
 import { useAppSelector } from '@/src/lib/store/hooks'
 import { useApp, type AppView } from './app-context'
+import { useGetSubscriptionQuery } from '@/src/lib/api/subscriptionApi'
+import type { Feature } from '@/src/lib/api/subscriptionApi'
+import { FEATURES } from '@/src/constants/features'
 
-const navItems: { id: AppView; label: string; icon: React.ElementType; isPro?: boolean }[] = [
+const navItems: { id: AppView; label: string; icon: React.ElementType; feature?: Feature }[] = [
   { id: 'dashboard', label: 'لوحة التحكم',  icon: LayoutDashboard },
   { id: 'students',  label: 'الطلاب',        icon: Users           },
   { id: 'groups',    label: 'المجموعات',     icon: Layers          },
   { id: 'sessions',  label: 'الحصص',         icon: CalendarDays    },
   { id: 'payments',  label: 'المصروفات',     icon: WalletCards     },
-  { id: 'quizzes',   label: 'الاختبارات',    icon: Award, isPro: true },
+  { id: 'quizzes',   label: 'الاختبارات',    icon: Award,           feature: FEATURES.QUIZZES },
   { id: 'reports',   label: 'التقارير',      icon: LineChart       },
   { id: 'settings',  label: 'الإعدادات',     icon: Settings        },
 ]
@@ -38,6 +41,9 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const user     = useAppSelector((state) => state.auth.user)
   const router   = useRouter()
   const pathname = usePathname()
+
+  const { data: subscriptionData } = useGetSubscriptionQuery()
+  const activeFeatures = subscriptionData?.data.features ?? []
 
   const currentView = (pathname.split('/').filter(Boolean)[0] ?? 'dashboard') as AppView
 
@@ -114,8 +120,9 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1 flex-1 overflow-y-auto" aria-label="القائمة الرئيسية">
-          {navItems.map(({ id, label, icon: Icon, isPro }) => {
+          {navItems.map(({ id, label, icon: Icon, feature }) => {
             const isActive = currentView === id
+            const locked = feature ? !activeFeatures.includes(feature) : false
             return (
               <button
                 key={id}
@@ -131,7 +138,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                   <Icon className={`w-4 h-4 ${isActive ? 'text-[#3157D5]' : 'opacity-60'}`} />
                   <span>{label}</span>
                 </div>
-                {isPro && (
+                {locked && (
                   <span className="bg-[#FEE4E2] text-[#F04438] text-[10px] font-bold px-1.5 py-0.5 rounded">
                     PRO
                   </span>

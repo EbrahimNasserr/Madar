@@ -1,25 +1,23 @@
 "use client";
 
-import { useGetSubscriptionQuery } from "@/src/lib/api/subscriptionApi";
+import type { ReactNode } from "react";
 import type { Feature } from "@/src/lib/api/subscriptionApi";
+import { useFeature } from "@/src/lib/hooks/useFeature";
 
-type FeatureGuardProps = {
+type Props = {
   feature: Feature;
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 };
 
 export default function FeatureGuard({
   feature,
   children,
   fallback = null,
-}: FeatureGuardProps) {
-  const { data, isLoading } = useGetSubscriptionQuery();
+}: Props) {
+  const { hasFeature, isLoading } = useFeature(feature);
 
-  // Don't flash locked content while the subscription is loading
   if (isLoading) return null;
 
-  const allowed = data?.data.features.includes(feature) ?? false;
-
-  return allowed ? children : (fallback ?? null);
+  return hasFeature ? children : fallback;
 }
