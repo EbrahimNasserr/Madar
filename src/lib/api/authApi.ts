@@ -59,7 +59,30 @@ export const authApi = baseApi.injectEndpoints({
 
     getMe: builder.query<GetMeResponse, void>({
       query: () => "/auth/me",
-      providesTags: ["Auth"],
+      providesTags: [{ type: "Auth", id: "ME" }],
+    }),
+
+    updateMe: builder.mutation<
+      { success: boolean; data: { user: AuthUser } },
+      { firstName?: string; lastName?: string; phone?: string }
+    >({
+      query: (body) => ({
+        url: "/auth/me",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: [{ type: "Auth", id: "ME" }],
+    }),
+
+    changePassword: builder.mutation<
+      { success: boolean; message: string },
+      { currentPassword: string; newPassword: string }
+    >({
+      query: (body) => ({
+        url: "/auth/change-password",
+        method: "PATCH",
+        body,
+      }),
     }),
 
     logout: builder.mutation<unknown, void>({
@@ -76,5 +99,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
+  useUpdateMeMutation,
+  useChangePasswordMutation,
   useLogoutMutation,
 } = authApi;

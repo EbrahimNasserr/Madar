@@ -15,4 +15,12 @@ export const metadata: Metadata = {
   },
 }
 
-export default function Page() { return <MadarMarketing /> }
+import GuestGuard from "@/components/auth/GuestGuard";
+
+export default function Page() {
+  return (
+    <GuestGuard>
+      <MadarMarketing />
+    </GuestGuard>
+  );
+}

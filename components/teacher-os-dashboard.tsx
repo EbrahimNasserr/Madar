@@ -17,6 +17,7 @@ import { PaymentsPage }  from '@/components/dashboard/pages/payments-page'
 import { SessionsPage }  from '@/components/dashboard/sessions/SessionsPage'
 import { SimplePage }    from '@/components/dashboard/pages/simple-page'
 import type { PageKey }  from '@/components/dashboard/types'
+import SettingsPage from './settings/SettingsPage'
 
 // Routes the shell renders inline (everything else uses the `children` prop)
 const KNOWN_PAGES: string[] = [
@@ -60,7 +61,7 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
           {!isNested && pageKey === 'payments'  && <PaymentsPage />}
           {!isNested && pageKey === 'sessions'  && <SessionsPage />}
           {!isNested && (pageKey === 'quizzes' || pageKey === 'expenses' || pageKey === 'reports') && children}
-          {!isNested && pageKey === 'settings'  && <SimplePage page={pageKey} />}
+          {!isNested && pageKey === 'settings'  && <SettingsPage />}
           {/* dashboard home + nested/dynamic routes use the passed children */}
           {(pageKey === 'dashboard' || isNested || !KNOWN_PAGES.includes(segment)) && children}
         </main>

@@ -40,7 +40,7 @@ export default function MadarAuth({ signup = false }: { signup?: boolean }) {
         })
       )
 
-      router.push('/dashboard')
+      router.replace('/dashboard')
     } catch {
       setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.')
     }
