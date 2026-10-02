@@ -63,7 +63,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
 
       {/* Action */}
       <Link
-        href={`/quizzes/${quiz._id}`}
+        href={`/quizzes/${quiz._id}/grading`}
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
       >
         <BookOpen className="h-4 w-4" />
