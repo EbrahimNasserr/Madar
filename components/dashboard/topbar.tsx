@@ -1,23 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Search, Bell, Plus, Clock, Sparkles, Menu } from 'lucide-react'
 import { useApp } from './app-context'
+import { useGetSubscriptionQuery } from '@/src/lib/api/subscriptionApi'
 
 interface TopbarProps {
   onMenuToggle: () => void
 }
 
+/** Format today's date in Arabic — e.g. "الأربعاء، ٢ أكتوبر ٢٠٢٦" */
+function useTodayArabic() {
+  return useMemo(
+    () =>
+      new Intl.DateTimeFormat('ar-EG', {
+        weekday: 'long',
+        day:     'numeric',
+        month:   'long',
+        year:    'numeric',
+      }).format(new Date()),
+    [],
+  )
+}
+
 export function Topbar({ onMenuToggle }: TopbarProps) {
   const {
-    plan,
-    togglePlan,
     unreadNotificationCount,
     notifications,
     markNotificationsAsRead,
     setIsQuickAddOpen,
     setIsSearchOpen,
   } = useApp()
+
+  const todayArabic = useTodayArabic()
+
+  // ── Real subscription / plan ──────────────────────────────────────────────
+  const { data: subData } = useGetSubscriptionQuery()
+  const plan = subData?.data?.plan ?? 'basic'
 
   const [isNotifOpen, setIsNotifOpen] = useState(false)
 
@@ -43,26 +62,25 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
 
       {/* Right controls */}
       <div className="flex items-center gap-2.5">
-        {/* Date badge */}
+        {/* Live date badge */}
         <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F8FC] border border-gray-200 text-xs font-semibold text-[#667085]">
           <Clock className="w-3.5 h-3.5 text-[#3157D5]" aria-hidden="true" />
-          <span>الأربعاء، 2 سبتمبر 2026</span>
+          <span>{todayArabic}</span>
         </div>
 
-        {/* Plan toggle pill */}
-        <button
-          onClick={togglePlan}
+        {/* Plan pill — driven by real subscription data */}
+        <div
           className={[
-            'hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all',
+            'hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold',
             plan === 'pro'
               ? 'bg-[#F3F0FF] text-[#6D5EF5] border border-[#6D5EF5]/30'
               : 'bg-[#EAF0FF] text-[#3157D5] border border-[#3157D5]/20',
           ].join(' ')}
-          title="انقر للتبديل بين تجربة Basic و Pro"
+          title={`الخطة الحالية: ${plan === 'pro' ? 'Pro' : 'Basic'}`}
         >
           <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
           <span>خطة {plan === 'pro' ? 'Pro 🚀' : 'Basic'}</span>
-        </button>
+        </div>
 
         {/* Quick add */}
         <button
