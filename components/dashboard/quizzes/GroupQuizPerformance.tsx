@@ -4,12 +4,10 @@ import { useState } from "react";
 import { useGetGroupQuizPerformanceQuery } from "@/src/lib/api/quizzesApi";
 import type { GroupStudentPerformanceEntry } from "@/src/lib/api/quizzesApi";
 import { getCurrentBillingPeriod } from "@/src/lib/date/billingPeriod";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function safeNumber(value: number | null | undefined): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : 0;
-}
+import ErrorState from "@/components/ui/ErrorState";
+import EmptyState from "@/components/ui/EmptyState";
+import { formatDate } from "@/src/lib/formatters/date";
+import { formatPercentage, safePercentage } from "@/src/lib/formatters/percentage";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -74,18 +72,17 @@ function PerformanceList({
                 </div>
               </div>
 
-              {/* Percentage pill */}
               <span
                 className={[
                   "rounded-full px-3 py-1.5 text-sm font-bold",
-                  safeNumber(entry.averagePercentage) >= 80
+                  safePercentage(entry.averagePercentage) >= 80
                     ? "bg-emerald-50 text-emerald-700"
-                    : safeNumber(entry.averagePercentage) >= 60
+                    : safePercentage(entry.averagePercentage) >= 60
                     ? "bg-amber-50 text-amber-700"
                     : "bg-red-50 text-red-700",
                 ].join(" ")}
               >
-                {safeNumber(entry.averagePercentage).toFixed(0)}%
+                {formatPercentage(entry.averagePercentage)}
               </span>
             </div>
           ))}
@@ -112,11 +109,7 @@ export default function GroupQuizPerformance({ groupId }: Props) {
   }
 
   if (isError || !data?.data) {
-    return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-        تعذر تحميل أداء المجموعة.
-      </div>
-    );
+    return <ErrorState description="تعذر تحميل أداء المجموعة." />;
   }
 
   const perf = data.data;
@@ -151,14 +144,8 @@ export default function GroupQuizPerformance({ groupId }: Props) {
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="عدد الاختبارات"  value={summary.totalQuizzes} />
-        <StatCard
-          label="متوسط المجموعة"
-          value={`${safeNumber(summary.averagePercentage).toFixed(0)}%`}
-        />
-        <StatCard
-          label="أعلى نتيجة"
-          value={`${safeNumber(summary.topPercentage).toFixed(0)}%`}
-        />
+        <StatCard label="متوسط المجموعة"  value={formatPercentage(summary.averagePercentage)} />
+        <StatCard label="أعلى نتيجة"       value={formatPercentage(summary.topPercentage)} />
         <StatCard label="نتائج مصححة"    value={summary.gradedResults} />
       </div>
 
@@ -185,9 +172,7 @@ export default function GroupQuizPerformance({ groupId }: Props) {
         </div>
 
         {quizzes.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-400">
-            لا توجد اختبارات خلال هذه الفترة.
-          </div>
+          <EmptyState title="لا توجد اختبارات خلال هذه الفترة." />
         ) : (
           <div className="divide-y divide-slate-100">
             {quizzes.map((quiz) => (
@@ -199,21 +184,14 @@ export default function GroupQuizPerformance({ groupId }: Props) {
                   {/* API field is "title" not "quizTitle" */}
                   <p className="font-medium text-slate-900">{quiz.title}</p>
                   <p className="mt-1 text-xs text-slate-400">
-                    {new Date(quiz.quizDate).toLocaleDateString("ar-EG", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {formatDate(quiz.quizDate)}
                     {" · "}
                     الدرجة الكاملة: {quiz.totalMarks}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-6">
-                  <Metric
-                    label="المتوسط"
-                    value={`${safeNumber(quiz.averagePercentage).toFixed(0)}%`}
-                  />
+                  <Metric label="المتوسط"      value={formatPercentage(quiz.averagePercentage)} />
                   {/* API fields are "graded"/"absent" not "gradedCount"/"absentCount" */}
                   <Metric label="تم التصحيح" value={quiz.graded} />
                   <Metric label="غياب"        value={quiz.absent} />

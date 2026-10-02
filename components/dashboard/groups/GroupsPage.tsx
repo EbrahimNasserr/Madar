@@ -1,12 +1,11 @@
-'use client'
-
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { useGetGroupsQuery } from '@/src/lib/api/groupsApi'
 import type { Group } from '@/src/lib/api/groupsApi'
-import { GroupsHeader }    from './GroupsHeader'
 import { GroupsGrid }      from './GroupsGrid'
 import { GroupModal }      from './GroupModal'
 import { DeactivateModal } from './DeactivateModal'
+import PageHeader from '@/components/ui/PageHeader'
 
 export function GroupsPage() {
   const { data, isLoading, isError, refetch } = useGetGroupsQuery()
@@ -20,9 +19,19 @@ export function GroupsPage() {
 
   return (
     <section className="space-y-6  animate-[appear_0.28s_ease-out]" dir="rtl">
-      <GroupsHeader
-        total={isLoading ? undefined : groups.length}
-        onAdd={() => setCreateOpen(true)}
+      <PageHeader
+        eyebrow="إدارة المجموعات"
+        title={!isLoading ? `المجموعات (${groups.length})` : 'المجموعات'}
+        description="نظم مجموعاتك ومواعيد الحصص والطلاب من مكان واحد."
+        actions={
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#3157D5] text-white text-sm font-semibold hover:bg-[#243FA3] transition shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            إنشاء مجموعة
+          </button>
+        }
       />
 
       <GroupsGrid

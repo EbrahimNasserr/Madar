@@ -68,44 +68,11 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         className={[
           'flex flex-col w-64 xl:w-72 bg-white border-l border-[#E5E7EB]',
           'px-3.5 pt-5 pb-4 shrink-0',
-          'fixed top-0 right-0 h-full z-40 transition-transform duration-200',
-          'lg:static lg:translate-x-0 lg:h-screen',
+          'sticky top-0 right-0 h-screen z-40 transition-transform duration-200',
+          'lg:translate-x-0 lg:h-screen',
           mobileOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
-        {/* Brand header */}
-        <div className="flex items-center justify-between px-2 py-2 border-b border-gray-100 mb-4">
-          <button
-            onClick={() => go('landing' as AppView)}
-            className="flex items-center gap-3 cursor-pointer group"
-          >
-            <div className="w-10 h-10 bg-[#3157D5] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm group-hover:bg-[#243FA3] transition-colors">
-              م
-            </div>
-            <div>
-              <h1 className="text-xl font-bold leading-none text-[#111827]">مَـدار</h1>
-              <p className="text-[10px] text-[#667085] tracking-widest uppercase mt-0.5 font-semibold">MADAR</p>
-            </div>
-          </button>
-
-          {/* Mobile close */}
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-            aria-label="إغلاق القائمة"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          {/* Desktop home shortcut */}
-          <button
-            onClick={() => go('landing' as AppView)}
-            className="hidden lg:flex p-2 rounded-lg text-[#667085] hover:text-[#3157D5] hover:bg-gray-50 transition-colors"
-            aria-label="الصفحة الرئيسية"
-          >
-            <Home className="w-4 h-4" />
-          </button>
-        </div>
 
         {/* Quick add */}
         <div className="mb-4">

@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react'
 import type { Session } from '@/src/lib/api/sessionsApi'
 import { SessionRow } from '@/components/dashboard/sessions/SessionRow'
+import EmptyState from '@/components/ui/EmptyState'
+import ErrorState from '@/components/ui/ErrorState'
 
 type GroupSessionsListProps = {
   groupId:    string
@@ -42,13 +44,15 @@ export function GroupSessionsList({
         {isLoading ? (
           <div className="p-6 text-sm text-slate-500">جارٍ تحميل الحصص...</div>
         ) : isError ? (
-          <div className="p-6 text-sm text-red-600">تعذر تحميل الحصص.</div>
+          <div className="p-4">
+            <ErrorState description="تعذر تحميل الحصص." />
+          </div>
         ) : sessions.length === 0 ? (
-          <div className="p-10 text-center">
-            <p className="font-medium text-slate-900">لا توجد حصص بعد</p>
-            <p className="mt-1 text-sm text-slate-500">
-              أنشئ أول حصة للمجموعة من الزر أعلاه.
-            </p>
+          <div className="p-4">
+            <EmptyState
+              title="لا توجد حصص بعد"
+              description="أنشئ أول حصة للمجموعة من الزر أعلاه."
+            />
           </div>
         ) : (
           sessions.map((session) => (

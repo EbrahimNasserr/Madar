@@ -11,6 +11,7 @@ import {
   SESSION_STATUS_LABELS,
   SESSION_STATUS_STYLES,
 } from '@/src/constants/sessionStatus'
+import PageHeader from '@/components/ui/PageHeader'
 
 // ─── Single group section ─────────────────────────────────────────────────────
 
@@ -118,18 +119,11 @@ export function SessionsPage() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      {/* Header */}
-      <div>
-        <p className="text-[11px] font-bold text-[#3157D5] tracking-wide uppercase mb-1">
-          إدارة الحصص
-        </p>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-          الحصص
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          عرض الحصص مرتبة حسب كل مجموعة.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="إدارة الحصص"
+        title="الحصص"
+        description="عرض الحصص مرتبة حسب كل مجموعة."
+      />
 
       {/* Loading */}
       {isLoading && (

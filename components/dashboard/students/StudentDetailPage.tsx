@@ -11,6 +11,7 @@ import { SCHOOL_TYPE_LABELS } from './shared/constants'
 import FeatureGuard from '@/components/auth/FeatureGuard'
 import { FEATURES } from '@/src/constants/features'
 import StudentQuizPerformance from '@/components/dashboard/quizzes/StudentQuizPerformance'
+import PageSkeleton from '@/components/ui/PageSkeleton'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -41,11 +42,7 @@ export function StudentDetailPage({ params }: Props) {
   const student = data?.data.student
 
   if (isLoading || !student) {
-    return (
-      <div className="flex items-center justify-center p-16 text-sm text-slate-400">
-        جارٍ تحميل بيانات الطالب...
-      </div>
-    )
+    return <PageSkeleton cards={2} />
   }
 
   return (

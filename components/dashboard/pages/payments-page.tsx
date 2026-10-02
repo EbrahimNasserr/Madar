@@ -1,20 +1,17 @@
 import Link from 'next/link'
 import { Wallet, Layers } from 'lucide-react'
+import PageHeader from '@/components/ui/PageHeader'
 
 // The payments feature lives within each group's detail page.
 // This page guides the teacher to the right place.
 export function PaymentsPage() {
   return (
     <section className="space-y-6" dir="rtl">
-      <div>
-        <p className="text-[11px] font-bold text-[#3157D5] tracking-wide uppercase mb-1">
-          المدفوعات
-        </p>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">المدفوعات</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          تتم متابعة المدفوعات من داخل صفحة كل مجموعة.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="المدفوعات"
+        title="المدفوعات"
+        description="تتم متابعة المدفوعات من داخل صفحة كل مجموعة."
+      />
 
       <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
         <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-[#EAF0FF] flex items-center justify-center">

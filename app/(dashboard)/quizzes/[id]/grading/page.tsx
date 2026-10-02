@@ -8,6 +8,12 @@ import {
   useSaveQuizResultsMutation,
 } from "@/src/lib/api/quizzesApi";
 import type { QuizResultStatus } from "@/src/lib/api/quizzesApi";
+import ErrorState from "@/components/ui/ErrorState";
+import PageSkeleton from "@/components/ui/PageSkeleton";
+import PageHeader from "@/components/ui/PageHeader";
+import EmptyState from "@/components/ui/EmptyState";
+import { formatDate } from "@/src/lib/formatters/date";
+import { formatPercentage } from "@/src/lib/formatters/percentage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -119,45 +125,30 @@ function QuizGradingContent({ id }: { id: string }) {
     }
   };
 
-  // ── Loading ───────────────────────────────────────────────────────────────
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-28 animate-pulse rounded-2xl bg-slate-100" />
-        <div className="h-96 animate-pulse rounded-2xl bg-slate-100" />
-      </div>
-    );
-  }
+  if (isLoading) return <PageSkeleton cards={3} />;
 
   if (isError || !quiz) {
-    return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
-        تعذر تحميل كشف الدرجات.
-      </div>
-    );
+    return <ErrorState description="تعذر تحميل كشف الدرجات." />;
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6" dir="rtl">
       {/* Header */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-sm font-medium text-indigo-600">تسجيل الدرجات</p>
-          <h1 className="mt-1 text-3xl font-bold text-slate-950">{quiz.title}</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            الدرجة النهائية: {quiz.totalMarks}
-          </p>
-        </div>
-
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {isSaving ? "جارٍ حفظ الدرجات..." : "حفظ الدرجات"}
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="تسجيل الدرجات"
+        title={quiz.title}
+        description={`${formatDate(quiz.quizDate)} · الدرجة الكاملة: ${quiz.totalMarks}`}
+        actions={
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {isSaving ? "جارٍ حفظ الدرجات..." : "حفظ الدرجات"}
+          </button>
+        }
+      />
 
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -179,7 +170,9 @@ function QuizGradingContent({ id }: { id: string }) {
         </div>
 
         <div className="divide-y divide-slate-100">
-          {students.map(({ student }) => {
+          {students.length === 0 ? (
+            <EmptyState title="لا يوجد طلاب في هذه المجموعة." />
+          ) : students.map(({ student }) => {
             const result = results.find((r) => r.studentId === student._id);
             if (!result) return null;
 
@@ -246,7 +239,7 @@ function QuizGradingContent({ id }: { id: string }) {
                     <>
                       {result.score !== "" && !isInvalid && (
                         <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
-                          {percentage.toFixed(0)}%
+                          {formatPercentage(percentage)}
                         </span>
                       )}
                       {isInvalid && (

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { X, AlertCircle } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,10 @@
 "use client";
 
 import { useGetStudentQuizPerformanceQuery } from "@/src/lib/api/quizzesApi";
+import ErrorState from "@/components/ui/ErrorState";
+import EmptyState from "@/components/ui/EmptyState";
+import { formatDate } from "@/src/lib/formatters/date";
+import { formatPercentage } from "@/src/lib/formatters/percentage";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -54,11 +58,7 @@ export default function StudentQuizPerformance({ studentId }: Props) {
   }
 
   if (isError || !data?.data) {
-    return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-        تعذر تحميل أداء الطالب.
-      </div>
-    );
+    return <ErrorState description="تعذر تحميل أداء الطالب." />;
   }
 
   // Real API shape: data.data.summary + data.data.trend (the history array)
@@ -101,9 +101,7 @@ export default function StudentQuizPerformance({ studentId }: Props) {
         </div>
 
         {!history || history.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-400">
-            لا توجد نتائج اختبارات حتى الآن.
-          </div>
+          <EmptyState title="لا توجد نتائج اختبارات حتى الآن." />
         ) : (
           <div className="divide-y divide-slate-100">
             {history.map((item) => (
@@ -117,11 +115,7 @@ export default function StudentQuizPerformance({ studentId }: Props) {
                   <p className="mt-0.5 text-xs text-slate-400">
                     {item.group.name}
                     {" · "}
-                    {new Date(item.quizDate).toLocaleDateString("ar-EG", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {formatDate(item.quizDate)}
                   </p>
                 </div>
 
@@ -145,7 +139,7 @@ export default function StudentQuizPerformance({ studentId }: Props) {
                           : "bg-red-50 text-red-700",
                       ].join(" ")}
                     >
-                      {safeNum(item.percentage).toFixed(0)}%
+                      {formatPercentage(item.percentage)}
                     </span>
                   </div>
                 )}

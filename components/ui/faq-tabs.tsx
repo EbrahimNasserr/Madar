@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 /* ─── Types ─────────────────────────────────────────────── */
 interface FaqEntry {

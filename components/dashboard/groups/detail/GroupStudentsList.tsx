@@ -2,6 +2,7 @@ import { Users } from 'lucide-react'
 import type { Student } from '@/src/lib/api/studentsApi'
 import { AddStudentPicker } from './AddStudentPicker'
 import { GroupStudentRow }  from './GroupStudentRow'
+import EmptyState from '@/components/ui/EmptyState'
 
 type EnrolledItem = {
   enrollmentId?: string
@@ -48,9 +49,11 @@ export function GroupStudentsList({
         {isLoading ? (
           <div className="p-6 text-sm text-slate-500">جارٍ تحميل الطلاب...</div>
         ) : enrolledStudents.length === 0 ? (
-          <div className="p-10 text-center">
-            <p className="font-medium text-slate-900">لا يوجد طلاب في المجموعة</p>
-            <p className="mt-1 text-sm text-slate-500">أضف أول طالب من الأعلى.</p>
+          <div className="p-4">
+            <EmptyState
+              title="لا يوجد طلاب في المجموعة"
+              description="أضف أول طالب من الأعلى."
+            />
           </div>
         ) : (
           enrolledStudents.map(({ student }) => (

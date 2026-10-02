@@ -1,5 +1,6 @@
-import { GraduationCap, Plus } from 'lucide-react'
+import { GraduationCap } from 'lucide-react'
 import type { PageKey } from '../types'
+import PageHeader from '@/components/ui/PageHeader'
 
 const labels: Partial<Record<PageKey, string>> = {
   reports:  'التقارير',
@@ -8,19 +9,12 @@ const labels: Partial<Record<PageKey, string>> = {
 
 export function SimplePage({ page }: { page: PageKey }) {
   return (
-    <section className="animate-[appear_0.28s_ease-out]">
-      <div className="flex items-end justify-between gap-5 mb-7">
-        <div>
-          <p className="text-[11px] font-bold text-primary tracking-wide m-0">Madar workspace</p>
-          <h1 className="mt-2 text-[clamp(23px,3vw,29px)] font-extrabold tracking-tight m-0">{labels[page]}</h1>
-          <p className="text-[12px] text-muted-foreground mt-1.5 m-0">
-            كل ما تحتاجه لإدارة يومك الدراسي بسهولة
-          </p>
-        </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold text-primary-foreground bg-primary rounded-[9px] shadow-sm hover:brightness-95 hover:-translate-y-px transition-all cursor-pointer shrink-0">
-          <Plus size={17} /> إضافة جديد
-        </button>
-      </div>
+    <section className="animate-[appear_0.28s_ease-out] space-y-6">
+      <PageHeader
+        eyebrow="Madar workspace"
+        title={labels[page] ?? ''}
+        description="كل ما تحتاجه لإدارة يومك الدراسي بسهولة"
+      />
 
       <div className="bg-card border border-border rounded-2xl shadow-sm min-h-[300px] grid place-items-center">
         <div className="flex flex-col items-center gap-2.5 text-center p-8">

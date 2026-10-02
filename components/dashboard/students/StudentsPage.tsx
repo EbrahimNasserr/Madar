@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { useGetStudentsQuery, type Student } from '@/src/lib/api/studentsApi'
 import { useDebounce } from '@/src/lib/hooks/useDebounce'
-import { StudentsHeader }  from './StudentsHeader'
 import { StudentsToolbar } from './StudentsToolbar'
 import { StudentsTable }   from './StudentsTable'
 import { StudentModal }    from './StudentModal'
 import { DeleteModal }     from './DeleteModal'
+import PageHeader from '@/components/ui/PageHeader'
 
 export function StudentsPage() {
   const [search, setSearch] = useState('')
@@ -37,9 +38,19 @@ export function StudentsPage() {
 
   return (
     <section className="space-y-6 animate-[appear_0.28s_ease-out]" dir="rtl">
-      <StudentsHeader
-        total={pagination?.total}
-        onAdd={() => setAddOpen(true)}
+      <PageHeader
+        eyebrow="إدارة الطلاب"
+        title={pagination?.total !== undefined ? `الطلاب (${pagination.total})` : 'الطلاب'}
+        description="إدارة طلابك ومتابعة بياناتهم من مكان واحد."
+        actions={
+          <button
+            onClick={() => setAddOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#3157D5] text-white text-sm font-semibold hover:bg-[#243FA3] transition shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            إضافة طالب
+          </button>
+        }
       />
 
       <StudentsToolbar
