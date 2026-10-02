@@ -17,7 +17,13 @@ type AttendanceTrendChartProps = {
   loading?: boolean
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+type ChartTooltipProps = {
+  active?:  boolean
+  payload?: { value: number }[]
+  label?:   string
+}
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs" dir="rtl">

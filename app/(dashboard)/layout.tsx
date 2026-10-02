@@ -38,10 +38,9 @@ export default function DashboardLayout({
 
   if (!initialized) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="flex items-center gap-3 text-sm text-slate-500">
-          <div className="size-5 animate-spin rounded-full border-2 border-slate-200 border-t-indigo-600" />
-
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="size-5 animate-spin rounded-full border-2 border-border border-t-primary" />
           جارٍ تحميل مَدار...
         </div>
       </div>
@@ -53,7 +52,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {children}
     </div>
   );

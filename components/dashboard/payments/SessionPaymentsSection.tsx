@@ -87,17 +87,25 @@ export function SessionPaymentsSection({
     }
   }
 
-  // Build a LedgerItem shape from a Payment for PaymentForm
-  const toLedgerItem = (p: Payment): LedgerItem => ({
-    paymentId:       p._id,
-    student:         typeof p.studentId === 'string' ? ({ _id: p.studentId } as any) : p.studentId,
-    amount:          p.amount,
-    paidAmount:      p.paidAmount,
-    remainingAmount: p.amount - p.paidAmount,
-    status:          p.status,
-    paymentMethod:   p.paymentMethod,
-    paymentDate:     p.paymentDate,
-  })
+  // Build a LedgerItem shape from a Payment for use in PaymentForm.
+  // Session payment responses from the API should always have studentId populated
+  // as a full Student object. If it arrives as a plain string, name fields will be empty.
+  const toLedgerItem = (p: Payment): LedgerItem => {
+    const student = typeof p.studentId === 'object'
+      ? p.studentId
+      : { _id: p.studentId as string, firstName: '—', lastName: '' }
+
+    return {
+      paymentId:       p._id,
+      student:         student as LedgerItem['student'],
+      amount:          p.amount,
+      paidAmount:      p.paidAmount,
+      remainingAmount: p.amount - p.paidAmount,
+      status:          p.status,
+      paymentMethod:   p.paymentMethod,
+      paymentDate:     p.paymentDate,
+    }
+  }
 
   return (
     <>

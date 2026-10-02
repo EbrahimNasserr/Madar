@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useGetStudentsQuery, type Student } from '@/src/lib/api/studentsApi'
 import { useDebounce } from '@/src/lib/hooks/useDebounce'
 import { StudentsHeader }  from './StudentsHeader'
@@ -11,18 +11,19 @@ import { DeleteModal }     from './DeleteModal'
 
 export function StudentsPage() {
   const [search, setSearch] = useState('')
-  const [page,   setPage]   = useState(1)
   const [status, setStatus] = useState<'' | 'active' | 'inactive'>('')
 
   const debouncedSearch = useDebounce(search, 400)
 
-  // Modal state
-  const [addOpen,       setAddOpen]       = useState(false)
-  const [editTarget,    setEditTarget]    = useState<Student | null>(null)
-  const [deleteTarget,  setDeleteTarget]  = useState<Student | null>(null)
+  // Reset to page 1 when filters change by treating the filter combo as the page key
+  const [page, setPage] = useState(1)
 
-  // Reset to page 1 whenever filters change
-  useEffect(() => { setPage(1) }, [debouncedSearch, status])
+  const [addOpen,      setAddOpen]      = useState(false)
+  const [editTarget,   setEditTarget]   = useState<Student | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Student | null>(null)
+
+  const handleSearch = (value: string) => { setSearch(value); setPage(1) }
+  const handleStatus = (value: '' | 'active' | 'inactive') => { setStatus(value); setPage(1) }
 
   const { data, isLoading, isFetching, isError } = useGetStudentsQuery({
     page,
@@ -44,8 +45,8 @@ export function StudentsPage() {
       <StudentsToolbar
         search={search}
         status={status}
-        onSearch={setSearch}
-        onStatus={setStatus}
+        onSearch={handleSearch}
+        onStatus={handleStatus}
       />
 
       <StudentsTable
@@ -62,7 +63,6 @@ export function StudentsPage() {
         onDelete={setDeleteTarget}
       />
 
-      {/* Modals */}
       {addOpen      && <StudentModal onClose={() => setAddOpen(false)} />}
       {editTarget   && <StudentModal student={editTarget} onClose={() => setEditTarget(null)} />}
       {deleteTarget && <DeleteModal  student={deleteTarget} onClose={() => setDeleteTarget(null)} />}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import MadarDashboard from '@/components/teacher-os-dashboard'
-import { SessionsPage } from '@/components/sessions/SessionsPage'
+import { SessionsPage } from '@/components/dashboard/sessions/SessionsPage'
 
 export const metadata: Metadata = {
   title: 'الحصص',

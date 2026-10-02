@@ -16,12 +16,24 @@ type FinancialTrendChartProps = {
   loading?: boolean
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+type TooltipPayloadEntry = {
+  name:  string
+  value: number
+  color: string
+}
+
+type ChartTooltipProps = {
+  active?:  boolean
+  payload?: TooltipPayloadEntry[]
+  label?:   string
+}
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs space-y-1" dir="rtl">
       <p className="font-semibold text-slate-700 mb-1">{label}</p>
-      {payload.map((entry: any) => (
+      {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ background: entry.color }} />
           <span className="text-slate-500">{entry.name}:</span>

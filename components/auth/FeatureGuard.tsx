@@ -21,5 +21,5 @@ export default function FeatureGuard({
 
   const allowed = data?.data.features.includes(feature) ?? false;
 
-  return allowed ? <>{children}</> : <>{fallback}</>;
+  return allowed ? children : (fallback ?? null);
 }

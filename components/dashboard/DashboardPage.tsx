@@ -86,7 +86,7 @@ export function DashboardPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6 p-6 lg:p-8" dir="rtl">
+    <div className="space-y-6" dir="rtl">
 
       {/* ── Page header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

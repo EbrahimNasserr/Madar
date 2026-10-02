@@ -46,7 +46,7 @@ export function StudentDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-6 p-6 lg:p-8" dir="rtl">
+    <div className="space-y-6" dir="rtl">
       {/* Back */}
       <Link
         href="/students"

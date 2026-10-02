@@ -6,6 +6,7 @@ import type { CreateGroupInput, Group } from '@/src/lib/api/groupsApi'
 import { Input }    from '@/components/ui/input'
 import { Select }   from '@/components/ui/select'
 import { WEEK_DAYS } from '@/src/constants/weekDays'
+import { SCHOOL_TYPE_LABELS } from './shared/constants'
 
 type GroupFormProps = {
   group?:        Group
@@ -108,10 +109,9 @@ export function GroupForm({ group, isSubmitting, onSubmit, onCancel }: GroupForm
             set('schoolType', e.target.value as CreateGroupInput['schoolType'])
           }
         >
-          <option value="government">حكومي</option>
-          <option value="experimental">تجريبي</option>
-          <option value="private">خاص</option>
-          <option value="other">أخرى</option>
+          {Object.entries(SCHOOL_TYPE_LABELS).map(([val, label]) => (
+            <option key={val} value={val}>{label}</option>
+          ))}
         </Select>
       </div>
 

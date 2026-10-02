@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { CalendarDays, ChevronLeft, Loader2 } from 'lucide-react'
 import { useGetGroupsQuery } from '@/src/lib/api/groupsApi'
 import { useGetGroupSessionsQuery } from '@/src/lib/api/sessionsApi'
-import type { Group, Session } from '@/src/lib/api/groupsApi'
+import type { Session } from '@/src/lib/api/sessionsApi'
+import type { Group } from '@/src/lib/api/groupsApi'
 import { formatArabicDate } from '@/src/lib/date/formatDate'
 import {
   SESSION_STATUS_LABELS,

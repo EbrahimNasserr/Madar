@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import type { Session } from '@/src/lib/api/sessionsApi'
-import { SessionRow } from '@/components/sessions/SessionRow'
+import { SessionRow } from '@/components/dashboard/sessions/SessionRow'
 
 type GroupSessionsListProps = {
   groupId:    string

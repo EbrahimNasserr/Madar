@@ -1,4 +1,3 @@
-import type { ParallaxFeature } from '@/components/ui/parallax-scroll-feature-section'
 import type { Testimonial } from '@/components/ui/animated-testimonials'
 import {
   IconCheck,
@@ -22,31 +21,6 @@ export const featureItems = [
   { icon: React.createElement(IconShield,        { size: 28 }), title: 'بيانات آمنة',          description: 'بياناتك ومعلومات طلابك محفوظة ومشفّرة بالكامل.' },
   { icon: React.createElement(IconDeviceMobile,  { size: 28 }), title: 'مصمم للموبايل',        description: 'استخدمه في الحصة مباشرةً من موبايلك بدون أي تعقيد.' },
   { icon: React.createElement(IconUsers,         { size: 28 }), title: 'إدارة طلاب لا محدودة', description: 'أضف مجموعات وطلاب بلا حدود، كل واحد بملفه الكامل.' },
-]
-
-// ── Workflow parallax ────────────────────────────────────
-export const workflowFeatures: ParallaxFeature[] = [
-  {
-    id: 1,
-    title: 'أنشئ مجموعتك في دقيقتين.',
-    description: 'حدد اسم المجموعة، الصف الدراسي، عدد الحصص الشهرية، وسعر الحصة — وMadar يجهّز كل حاجة تانية تلقائيًا.',
-    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=640&h=640&fit=crop',
-    reverse: false,
-  },
-  {
-    id: 2,
-    title: 'سجّل الحضور بضغطة واحدة.',
-    description: 'كل الطلاب بيبدأوا حاضرين، بس عدّل الغياب أو التأخير اللي محتاجه — وانتهى الأمر. السجل بيتحفظ تلقائيًا لكل حصة.',
-    imageUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=640&h=640&fit=crop',
-    reverse: true,
-  },
-  {
-    id: 3,
-    title: 'تابع المصروفات بدون كشكول.',
-    description: 'اعرف مين دفع ومين لسه في الوقت الفعلي، وشوف ملخص المبالغ المحصّلة والمتبقية لكل مجموعة بنظرة واحدة.',
-    imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=640&h=640&fit=crop',
-    reverse: false,
-  },
 ]
 
 // ── Testimonials ─────────────────────────────────────────

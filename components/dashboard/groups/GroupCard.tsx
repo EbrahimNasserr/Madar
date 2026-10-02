@@ -62,7 +62,7 @@ export function GroupCard({ group, onEdit, onDeactivate }: GroupCardProps) {
       </div>
 
       {/* ── Actions ── */}
-      <div className="mt-auto flex items-center gap-2 border-t border-slate-100 pt-4 mt-5">
+      <div className="mt-auto flex items-center gap-2 border-t border-slate-100 pt-4">
         <Link
           href={`/groups/${group._id}`}
           className="flex-1 rounded-xl bg-slate-900 px-3 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 transition"

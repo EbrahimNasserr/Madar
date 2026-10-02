@@ -18,7 +18,7 @@ import { formatArabicDate }              from '@/src/lib/date/formatDate'
 import { SESSION_STATUS_LABELS, SESSION_STATUS_STYLES } from '@/src/constants/sessionStatus'
 import { AttendanceRow }                 from './AttendanceRow'
 import { AttendanceSummary }             from './AttendanceSummary'
-import { SessionPaymentsSection }        from '@/components/payments/SessionPaymentsSection'
+import { SessionPaymentsSection }        from '@/components/dashboard/payments/SessionPaymentsSection'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -100,8 +100,8 @@ export function AttendanceWorkspace({ params }: Props) {
         })),
       }).unwrap()
       setAttendanceSaved(true)
-    } catch (err) {
-      console.error(err)
+    } catch {
+      // Save failures are surfaced via RTK Query error state on the button
     }
   }
 

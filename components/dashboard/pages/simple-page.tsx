@@ -2,7 +2,6 @@ import { GraduationCap, Plus } from 'lucide-react'
 import type { PageKey } from '../types'
 
 const labels: Partial<Record<PageKey, string>> = {
-  sessions: 'الحصص',
   reports:  'التقارير',
   settings: 'الإعدادات',
 }

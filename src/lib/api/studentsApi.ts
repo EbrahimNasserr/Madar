@@ -56,13 +56,6 @@ type MutationResponse = {
 };
 
 // API error shape from the backend
-export type ApiError = {
-  success: false;
-  code: string;
-  message: string;
-  errors: unknown[];
-};
-
 export type StudentsQueryParams = {
   page?: number;
   limit?: number;

@@ -4,25 +4,15 @@ import { useState } from 'react'
 import { X, Plus } from 'lucide-react'
 import { useApp } from './app-context'
 
-type Tab = 'student' | 'group' | 'session' | 'payment'
+type Tab = 'student' | 'group'
 
-// ─── Shared input styles ──────────────────────────────────────────────────────
-const input =
+// Shared field styles
+const fieldInput =
   'w-full px-3 py-2 bg-[#F7F8FC] border border-gray-200 rounded-xl text-xs font-bold text-[#111827] focus:outline-none focus:border-[#3157D5] focus:ring-1 focus:ring-[#3157D5]/20 transition-colors'
-const label = 'block font-bold text-[#111827] mb-1 text-xs'
+const fieldLabel = 'block font-bold text-[#111827] mb-1 text-xs'
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export function QuickAddModal() {
-  const {
-    isQuickAddOpen,
-    setIsQuickAddOpen,
-    groups,
-    students,
-    addStudent,
-    addGroup,
-    addSession,
-    recordPayment,
-  } = useApp()
+  const { isQuickAddOpen, setIsQuickAddOpen, groups, addStudent, addGroup } = useApp()
 
   const [tab, setTab] = useState<Tab>('student')
 
@@ -33,111 +23,52 @@ export function QuickAddModal() {
   const [stGroup,       setStGroup]       = useState(groups[0]?.id ?? '')
 
   // Group form
-  const [grpName,     setGrpName]     = useState('')
-  const [grpCenter,   setGrpCenter]   = useState('سنتر النور')
-  const [grpGrade,    setGrpGrade]    = useState('الصف الثالث الثانوي')
-  const [grpPrice,    setGrpPrice]    = useState(500)
-  const [grpCapacity, setGrpCapacity] = useState(30)
-
-  // Session form
-  const [sessGroup, setSessGroup] = useState(groups[0]?.id ?? '')
-  const [sessDate,  setSessDate]  = useState('2026-09-02')
-  const [sessTime,  setSessTime]  = useState('٦:٠٠ م')
-  const [sessTopic, setSessTopic] = useState('')
-
-  // Payment form
-  const [payStudent, setPayStudent] = useState(students[0]?.id ?? '')
-  const [payAmount,  setPayAmount]  = useState(500)
-  const [payMethod,  setPayMethod]  = useState<'cash' | 'vodafone_cash' | 'instapay'>('cash')
+  const [grpName,   setGrpName]   = useState('')
+  const [grpGrade,  setGrpGrade]  = useState('الصف الثالث الثانوي')
+  const [grpPrice,  setGrpPrice]  = useState(500)
 
   if (!isQuickAddOpen) return null
 
   const close = () => setIsQuickAddOpen(false)
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
   const handleAddStudent = (e: React.FormEvent) => {
     e.preventDefault()
-    const g = groups.find(grp => grp.id === stGroup) ?? groups[0]
+    const g = groups.find((grp) => grp.id === stGroup) ?? groups[0]
+    if (!g) return
     addStudent({
-      name: stName,
-      phone: stPhone,
-      parentPhone: stParentPhone,
-      groupId: g.id,
-      groupName: g.name,
-      grade: g.grade,
-      paymentStatus: 'paid',
-      totalPaid: g.pricePerSession,
+      name:               stName,
+      phone:              stPhone,
+      parentPhone:        stParentPhone,
+      groupId:            g.id,
+      groupName:          g.name,
+      grade:              g.grade,
+      totalPaid:          g.pricePerSession,
       outstandingBalance: 0,
-      notes: 'طالب جديد مضاف عبر الإضافة السريعة',
     })
-    setStName(''); setStPhone(''); setStParentPhone('')
+    setStName('')
+    setStPhone('')
+    setStParentPhone('')
     close()
   }
 
   const handleAddGroup = (e: React.FormEvent) => {
     e.preventDefault()
     addGroup({
-      name: grpName,
-      grade: grpGrade,
-      subject: 'رياضيات',
-      type: 'government',
-      centerName: grpCenter,
-      pricePerSession: grpPrice,
+      name:             grpName,
+      grade:            grpGrade,
+      subject:          'رياضيات',
+      pricePerSession:  grpPrice,
       sessionsPerMonth: 8,
-      scheduleDays: ['الثلاثاء', 'الجمعة'],
-      time: '٦:٠٠ م',
-      capacity: grpCapacity,
+      scheduleDays:     [],
+      time:             '',
     })
     setGrpName('')
     close()
   }
 
-  const handleAddSession = (e: React.FormEvent) => {
-    e.preventDefault()
-    const g = groups.find(grp => grp.id === sessGroup) ?? groups[0]
-    const groupStudents = students.filter(s => s.groupId === g.id)
-    addSession({
-      groupId: g.id,
-      groupName: g.name,
-      subject: g.subject,
-      grade: g.grade,
-      date: sessDate,
-      time: sessTime,
-      room: 'قاعة 1',
-      topic: sessTopic || 'مراجعة عامة وحل تمارين',
-      totalStudents: groupStudents.length,
-      status: 'upcoming',
-      isAttendanceSaved: false,
-      presentCount: 0,
-      absentCount: 0,
-      lateCount: 0,
-    })
-    setSessTopic('')
-    close()
-  }
-
-  const handleRecordPayment = (e: React.FormEvent) => {
-    e.preventDefault()
-    const s = students.find(st => st.id === payStudent)
-    if (!s) return
-    recordPayment({
-      studentId: s.id,
-      studentName: s.name,
-      groupId: s.groupId,
-      groupName: s.groupName,
-      amount: payAmount,
-      method: payMethod,
-      notes: 'سداد سريع',
-    })
-    close()
-  }
-
-  // ── Tab config ───────────────────────────────────────────────────────────────
   const tabs: { id: Tab; label: string }[] = [
     { id: 'student', label: 'طالب'   },
     { id: 'group',   label: 'مجموعة' },
-    { id: 'session', label: 'حصة'    },
-    { id: 'payment', label: 'دفعة'   },
   ]
 
   return (
@@ -157,19 +88,20 @@ export function QuickAddModal() {
           </div>
           <button
             onClick={close}
-            className="p-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
+            aria-label="إغلاق"
+            className="p-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#F7F8FC] rounded-2xl border border-gray-200 text-xs">
-          {tabs.map(t => (
+        <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#F7F8FC] rounded-2xl border border-gray-200 text-xs">
+          {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`py-2 text-center rounded-xl font-bold transition-all cursor-pointer ${
+              className={`py-2 text-center rounded-xl font-bold transition-all ${
                 tab === t.id
                   ? 'bg-[#3157D5] text-white shadow-sm'
                   : 'text-[#667085] hover:text-[#111827]'
@@ -180,264 +112,123 @@ export function QuickAddModal() {
           ))}
         </div>
 
-        {/* ── Student form ─────────────────────────────────────────────────── */}
+        {/* Student form */}
         {tab === 'student' && (
           <form onSubmit={handleAddStudent} className="space-y-3.5">
             <div>
-              <label className={label}>اسم الطالب</label>
+              <label className={fieldLabel}>اسم الطالب</label>
               <input
                 type="text"
                 required
                 placeholder="مثال: يوسف محمود حسن"
                 value={stName}
-                onChange={e => setStName(e.target.value)}
-                className={input}
+                onChange={(e) => setStName(e.target.value)}
+                className={fieldInput}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={label}>هاتف الطالب</label>
+                <label className={fieldLabel}>هاتف الطالب</label>
                 <input
                   type="tel"
-                  required
                   placeholder="01012345678"
                   value={stPhone}
-                  onChange={e => setStPhone(e.target.value)}
-                  className={`${input} font-mono`}
+                  onChange={(e) => setStPhone(e.target.value)}
+                  className={fieldInput}
                 />
               </div>
               <div>
-                <label className={label}>هاتف ولي الأمر</label>
+                <label className={fieldLabel}>هاتف ولي الأمر</label>
                 <input
                   type="tel"
-                  required
                   placeholder="01223456789"
                   value={stParentPhone}
-                  onChange={e => setStParentPhone(e.target.value)}
-                  className={`${input} font-mono`}
+                  onChange={(e) => setStParentPhone(e.target.value)}
+                  className={fieldInput}
                 />
               </div>
             </div>
 
             <div>
-              <label className={label}>المجموعة</label>
+              <label className={fieldLabel}>المجموعة</label>
               <select
                 value={stGroup}
-                onChange={e => setStGroup(e.target.value)}
-                className={input}
+                onChange={(e) => setStGroup(e.target.value)}
+                className={fieldInput}
               >
-                {groups.map(g => (
-                  <option key={g.id} value={g.id}>
-                    {g.name} ({g.centerName})
-                  </option>
+                {groups.length === 0 && (
+                  <option value="">لا توجد مجموعات — أنشئ مجموعة أولاً</option>
+                )}
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
               </select>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              disabled={groups.length === 0}
+              className="w-full py-3 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-xl text-xs transition-colors disabled:opacity-50"
             >
-              إضافة الطالب فوراً ✓
+              إضافة الطالب ✓
             </button>
           </form>
         )}
 
-        {/* ── Group form ───────────────────────────────────────────────────── */}
+        {/* Group form */}
         {tab === 'group' && (
           <form onSubmit={handleAddGroup} className="space-y-3.5">
             <div>
-              <label className={label}>اسم المجموعة</label>
+              <label className={fieldLabel}>اسم المجموعة</label>
               <input
                 type="text"
                 required
                 placeholder="مثال: مجموعة C — الصف الثالث"
                 value={grpName}
-                onChange={e => setGrpName(e.target.value)}
-                className={input}
+                onChange={(e) => setGrpName(e.target.value)}
+                className={fieldInput}
               />
             </div>
 
             <div>
-              <label className={label}>المرحلة الدراسية</label>
+              <label className={fieldLabel}>المرحلة الدراسية</label>
               <select
                 value={grpGrade}
-                onChange={e => setGrpGrade(e.target.value)}
-                className={input}
+                onChange={(e) => setGrpGrade(e.target.value)}
+                className={fieldInput}
               >
-                {['الصف الأول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي',
-                  'الصف السادس الابتدائي', 'الصف الثالث الإعدادي'].map(g => (
+                {[
+                  'الصف الأول الثانوي',
+                  'الصف الثاني الثانوي',
+                  'الصف الثالث الثانوي',
+                  'الصف السادس الابتدائي',
+                  'الصف الثالث الإعدادي',
+                ].map((g) => (
                   <option key={g} value={g}>{g}</option>
                 ))}
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={label}>اسم السنتر</label>
-                <input
-                  type="text"
-                  value={grpCenter}
-                  onChange={e => setGrpCenter(e.target.value)}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>سعر الحصة (ج.م)</label>
-                <input
-                  type="number"
-                  min={0}
-                  value={grpPrice}
-                  onChange={e => setGrpPrice(Number(e.target.value))}
-                  className={input}
-                />
-              </div>
-            </div>
-
             <div>
-              <label className={label}>الطاقة الاستيعابية</label>
+              <label className={fieldLabel}>سعر الحصة (ج.م)</label>
               <input
                 type="number"
-                min={1}
-                value={grpCapacity}
-                onChange={e => setGrpCapacity(Number(e.target.value))}
-                className={input}
+                min={0}
+                value={grpPrice}
+                onChange={(e) => setGrpPrice(Number(e.target.value))}
+                className={fieldInput}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              className="w-full py-3 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-xl text-xs transition-colors"
             >
               إنشاء المجموعة ✓
             </button>
           </form>
         )}
-
-        {/* ── Session form ─────────────────────────────────────────────────── */}
-        {tab === 'session' && (
-          <form onSubmit={handleAddSession} className="space-y-3.5">
-            <div>
-              <label className={label}>المجموعة</label>
-              <select
-                value={sessGroup}
-                onChange={e => setSessGroup(e.target.value)}
-                className={input}
-              >
-                {groups.map(g => (
-                  <option key={g.id} value={g.id}>
-                    {g.name} ({g.centerName})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={label}>التاريخ</label>
-                <input
-                  type="date"
-                  value={sessDate}
-                  onChange={e => setSessDate(e.target.value)}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>الموعد</label>
-                <input
-                  type="text"
-                  placeholder="٦:٠٠ م"
-                  value={sessTime}
-                  onChange={e => setSessTime(e.target.value)}
-                  className={input}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className={label}>موضوع الحصة (اختياري)</label>
-              <input
-                type="text"
-                placeholder="مثال: شرح درس التكامل بالتعويض"
-                value={sessTopic}
-                onChange={e => setSessTopic(e.target.value)}
-                className={input}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#3157D5] hover:bg-[#243FA3] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
-            >
-              جدولة الحصة ✓
-            </button>
-          </form>
-        )}
-
-        {/* ── Payment form ─────────────────────────────────────────────────── */}
-        {tab === 'payment' && (
-          <form onSubmit={handleRecordPayment} className="space-y-3.5">
-            <div>
-              <label className={label}>الطالب</label>
-              <select
-                value={payStudent}
-                onChange={e => setPayStudent(e.target.value)}
-                className={input}
-              >
-                {students.map(s => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.groupName})
-                  </option>
-                ))}
-              </select>
-
-              {/* Outstanding balance hint */}
-              {(() => {
-                const s = students.find(st => st.id === payStudent)
-                if (!s || s.outstandingBalance === 0) return null
-                return (
-                  <p className="mt-1.5 text-[11px] text-[#F79009] font-semibold">
-                    متأخرات: {s.outstandingBalance.toLocaleString()} ج.م
-                  </p>
-                )
-              })()}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={label}>المبلغ (ج.م)</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={payAmount}
-                  onChange={e => setPayAmount(Number(e.target.value))}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>طريقة الدفع</label>
-                <select
-                  value={payMethod}
-                  onChange={e => setPayMethod(e.target.value as typeof payMethod)}
-                  className={input}
-                >
-                  <option value="cash">نقداً (كاش)</option>
-                  <option value="vodafone_cash">فودافون كاش</option>
-                  <option value="instapay">InstaPay</option>
-                </select>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#12B76A] hover:bg-[#0E9355] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
-            >
-              تسجيل استلام الدفعة ✓
-            </button>
-          </form>
-        )}
-
       </div>
     </div>
   )
