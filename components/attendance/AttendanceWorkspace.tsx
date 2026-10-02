@@ -65,6 +65,7 @@ export function AttendanceWorkspace({ params }: Props) {
   // ── Draft attendance ────────────────────────────────────────────────────────
   const [attendance,      setAttendance]      = useState<DraftAttendance[]>([])
   const [attendanceSaved, setAttendanceSaved] = useState(false)
+  const [hasChanges,      setHasChanges]      = useState(false)
 
   // Seed draft + detect already-saved attendance
   useEffect(() => {
@@ -84,10 +85,12 @@ export function AttendanceWorkspace({ params }: Props) {
   }, [sheetData])
 
   // ── Handlers ────────────────────────────────────────────────────────────────
-  const changeStatus = (studentId: string, status: AttendanceStatus) =>
+  const changeStatus = (studentId: string, status: AttendanceStatus) => {
     setAttendance((prev) =>
       prev.map((item) => (item.studentId === studentId ? { ...item, status } : item)),
     )
+    setHasChanges(true)
+  }
 
   const handleSave = async () => {
     try {
@@ -100,6 +103,7 @@ export function AttendanceWorkspace({ params }: Props) {
         })),
       }).unwrap()
       setAttendanceSaved(true)
+      setHasChanges(false)
     } catch {
       // Save failures are surfaced via RTK Query error state on the button
     }
@@ -207,13 +211,19 @@ export function AttendanceWorkspace({ params }: Props) {
 
       {/* ── Session payments (per-session groups only, after attendance saved) ── */}
       {isPerSession && attendanceSaved && group && (
-        <SessionPaymentsSection
-          sessionId={id}
-          students={students}
-          attendance={attendance}
-          paymentByStudent={paymentByStudent}
-          pricePerSession={group.pricePerSession ?? 0}
-        />
+        hasChanges ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
+            احفظ تغييرات الحضور أولًا لتحديث مستحقات الحصة.
+          </div>
+        ) : (
+          <SessionPaymentsSection
+            sessionId={id}
+            students={students}
+            attendance={attendance}
+            paymentByStudent={paymentByStudent}
+            pricePerSession={group.pricePerSession ?? 0}
+          />
+        )
       )}
 
     </div>

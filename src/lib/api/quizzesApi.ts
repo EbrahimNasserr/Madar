@@ -151,6 +151,47 @@ type GroupQuizPerformanceResponse = {
   data: GroupQuizPerformance;
 };
 
+const TOP_PERFORMERS_LIMIT = 5;
+const NEEDS_ATTENTION_LIMIT = 5;
+const NEEDS_ATTENTION_MAX_PERCENT = 60;
+
+function deriveTopPerformers(
+  students: GroupStudentPerformanceEntry[],
+): GroupStudentPerformanceEntry[] {
+  return [...students]
+    .filter((s) => s.gradedCount > 0)
+    .sort((a, b) => b.averagePercentage - a.averagePercentage)
+    .slice(0, TOP_PERFORMERS_LIMIT);
+}
+
+function deriveNeedsAttention(
+  students: GroupStudentPerformanceEntry[],
+): GroupStudentPerformanceEntry[] {
+  return [...students]
+    .filter((s) => s.gradedCount > 0 && s.averagePercentage < NEEDS_ATTENTION_MAX_PERCENT)
+    .sort((a, b) => a.averagePercentage - b.averagePercentage)
+    .slice(0, NEEDS_ATTENTION_LIMIT);
+}
+
+function normalizeGroupQuizPerformance(
+  data: GroupQuizPerformance,
+): GroupQuizPerformance {
+  const students = data.students ?? [];
+  const quizzes = data.quizzes ?? [];
+
+  return {
+    ...data,
+    students,
+    quizzes,
+    topPerformers:
+      data.topPerformers ??
+      (students.length > 0 ? deriveTopPerformers(students) : []),
+    needsAttention:
+      data.needsAttention ??
+      (students.length > 0 ? deriveNeedsAttention(students) : []),
+  };
+}
+
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 
 export const quizzesApi = baseApi.injectEndpoints({
@@ -275,6 +316,14 @@ export const quizzesApi = baseApi.injectEndpoints({
       query: ({ groupId, period }) => ({
         url: `/quizzes/group/${groupId}/performance`,
         params: period ? { period } : undefined,
+      }),
+      transformResponse: (raw: GroupQuizPerformanceResponse): GroupQuizPerformanceResponse => ({
+        success: raw.success,
+        data: normalizeGroupQuizPerformance({
+          ...raw.data,
+          students: raw.data.students ?? [],
+          quizzes: raw.data.quizzes ?? [],
+        }),
       }),
       providesTags: (_result, _error, { groupId, period }) => [
         { type: "Quizzes", id: `GROUP-PERFORMANCE-${groupId}-${period ?? "ALL"}` },

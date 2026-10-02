@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useGetStudentsQuery, type Student } from '@/src/lib/api/studentsApi'
 import { useDebounce } from '@/src/lib/hooks/useDebounce'
+import { useStaleQueryData } from '@/src/lib/hooks/useStaleQueryData'
 import { StudentsToolbar } from './StudentsToolbar'
 import { StudentsTable }   from './StudentsTable'
 import { StudentModal }    from './StudentModal'
@@ -33,8 +34,10 @@ export function StudentsPage() {
     ...(status          && { status }),
   })
 
-  const students   = data?.data.students   ?? []
-  const pagination = data?.data.pagination
+  const studentsFresh =
+    data?.data ? (data.data.students ?? []) : undefined
+  const students = useStaleQueryData(studentsFresh, isFetching, []) ?? []
+  const pagination = data?.data.pagination ?? undefined
 
   return (
     <section className="space-y-6 animate-[appear_0.28s_ease-out]" dir="rtl">
@@ -63,7 +66,7 @@ export function StudentsPage() {
       <StudentsTable
         students={students}
         pagination={pagination}
-        isLoading={isLoading}
+        isLoading={isLoading && students.length === 0}
         isFetching={isFetching}
         isError={isError}
         isFiltered={Boolean(debouncedSearch || status)}

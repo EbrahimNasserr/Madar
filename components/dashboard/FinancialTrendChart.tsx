@@ -12,8 +12,9 @@ import {
 import type { FinancialTrendItem } from '@/src/lib/api/dashboardApi'
 
 type FinancialTrendChartProps = {
-  data:     FinancialTrendItem[]
-  loading?: boolean
+  data:      FinancialTrendItem[]
+  loading?:  boolean
+  fetching?: boolean
 }
 
 type TooltipPayloadEntry = {
@@ -44,9 +45,17 @@ const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   )
 }
 
-export function FinancialTrendChart({ data, loading }: FinancialTrendChartProps) {
+export function FinancialTrendChart({
+  data,
+  loading,
+  fetching,
+}: FinancialTrendChartProps) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+    <div
+      className={`rounded-2xl border border-slate-200 bg-white p-5 transition-opacity ${
+        fetching ? 'opacity-60' : ''
+      }`}
+    >
       <h2 className="font-bold text-slate-900">الأداء المالي</h2>
       <p className="mt-0.5 text-xs text-slate-400">المستحق مقابل المحصل خلال آخر 6 أشهر</p>
 

@@ -167,6 +167,7 @@ export function QuizGradingWorkspace({ params }: Props) {
   // ── Draft results ────────────────────────────────────────────────────────────
   const [drafts, setDrafts] = useState<DraftResult[]>([]);
   const [savedOnce, setSavedOnce] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Seed from server sheet on first load
   useEffect(() => {
@@ -188,10 +189,12 @@ export function QuizGradingWorkspace({ params }: Props) {
     }
   }, [sheetData]);
 
-  const updateDraft = (studentId: string, patch: Partial<DraftResult>) =>
+  const updateDraft = (studentId: string, patch: Partial<DraftResult>) => {
     setDrafts((prev) =>
       prev.map((d) => (d.studentId === studentId ? { ...d, ...patch } : d))
     );
+    setHasChanges(true);
+  };
 
   const handleSave = async () => {
     if (!quiz) return;
@@ -206,8 +209,8 @@ export function QuizGradingWorkspace({ params }: Props) {
         })),
       }).unwrap();
       setSavedOnce(true);
-      toast
-       .success("تم حفظ الدرجات بنجاح!");
+      setHasChanges(false);
+      toast.success("تم حفظ الدرجات بنجاح!");
     } catch {
       // error state handled by RTK Query
     }
@@ -302,6 +305,11 @@ export function QuizGradingWorkspace({ params }: Props) {
       {drafts.length > 0 && (
         <div className="sticky bottom-4 z-10">
           <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-lg backdrop-blur-sm">
+            {hasChanges && (
+              <p className="mb-2 text-center text-xs font-medium text-amber-600">
+                لديك تغييرات غير محفوظة
+              </p>
+            )}
             <button
               type="button"
               onClick={handleSave}

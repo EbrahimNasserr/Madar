@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import type { PaymentLedgerResponse } from '@/src/lib/api/paymentsApi'
+import { useStaleQueryData } from '@/src/lib/hooks/useStaleQueryData'
 import { Loader2, RefreshCw } from 'lucide-react'
 import {
   useGetGroupPaymentLedgerQuery,
@@ -60,8 +62,13 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
   const [generateMonthlyPayments, { isLoading: isGenerating }] =
     useGenerateMonthlyPaymentsMutation()
 
-  const summary = data?.data.summary
-  const ledger  = data?.data.ledger ?? []
+  type LedgerSummary = PaymentLedgerResponse['data']['summary']
+
+  const ledgerFresh = data?.data ? (data.data.ledger ?? []) : undefined
+  const summaryFresh = data?.data?.summary
+
+  const ledger = useStaleQueryData(ledgerFresh, isFetching, []) ?? []
+  const summary = useStaleQueryData(summaryFresh, isFetching)
 
   const handleGenerate = async () => {
     await generateMonthlyPayments({ groupId, billingPeriod: period }).unwrap()
@@ -102,8 +109,8 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
         </div>
       </div>
 
-      {/* ── Loading ── */}
-      {(isLoading || isFetching) && (
+      {/* ── Loading (first load) ── */}
+      {isLoading && ledger.length === 0 && !summary && (
         <div className="flex items-center gap-2 py-8 text-sm text-slate-400">
           <Loader2 className="h-4 w-4 animate-spin" />
           جارٍ تحميل السجل...
@@ -111,7 +118,7 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
       )}
 
       {/* ── Error ── */}
-      {isError && !isLoading && (
+      {isError && !isLoading && !ledger.length && (
         <div className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3">
           <p className="text-sm text-red-700">تعذر تحميل سجل المدفوعات.</p>
           <button
@@ -125,7 +132,7 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
       )}
 
       {/* ── Empty ── */}
-      {!isLoading && !isError && ledger.length === 0 && (
+      {!isLoading && !isFetching && !isError && ledger.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white py-10 text-center">
           <p className="font-medium text-slate-700">لا توجد فواتير لهذا الشهر</p>
           <p className="mt-1 text-sm text-slate-400">
@@ -135,8 +142,10 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
       )}
 
       {/* ── Summary cards ── */}
-      {!isLoading && summary && ledger.length > 0 && (
-        <>
+      {summary && ledger.length > 0 && (
+        <div
+          className={`transition-opacity ${isFetching ? 'opacity-60' : ''}`}
+        >
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <FinancialCard label="المطلوب"     value={summary.totalAmount}       />
             <FinancialCard label="المحصّل"     value={summary.paidAmount}        highlight="green" />
@@ -182,7 +191,7 @@ export function MonthlyPaymentLedger({ groupId }: MonthlyPaymentLedgerProps) {
               </tbody>
             </table>
           </div>
-        </>
+        </div>
       )}
     </section>
   )

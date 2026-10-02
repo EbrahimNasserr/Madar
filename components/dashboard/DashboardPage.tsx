@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Layers, CalendarDays, TrendingUp, Wallet, RefreshCw } from 'lucide-react'
+import { Users, CalendarDays, TrendingUp, Wallet, RefreshCw } from 'lucide-react'
 import {
   useGetDashboardOverviewQuery,
   useGetFinancialTrendQuery,
   useGetAttendanceTrendQuery,
   useGetGroupsPerformanceQuery,
+  type DashboardOverview,
 } from '@/src/lib/api/dashboardApi'
+import { useStaleQueryData } from '@/src/lib/hooks/useStaleQueryData'
 import { getCurrentBillingPeriod, formatBillingPeriod } from '@/src/lib/date/billingPeriod'
 import { DashboardStatCard }          from './DashboardStatCard'
 import { DashboardAttendanceSummary } from './DashboardAttendanceSummary'
@@ -42,26 +44,53 @@ export function DashboardPage() {
   const [period, setPeriod] = useState(getCurrentBillingPeriod)
 
   const {
-    data:      overviewData,
-    isLoading: overviewLoading,
-    isError:   overviewError,
+    data:        overviewData,
+    isLoading:   overviewLoading,
+    isFetching:  overviewFetching,
+    isError:     overviewError,
     refetch,
   } = useGetDashboardOverviewQuery(period)
 
-  const { data: financialData,  isLoading: financialLoading  } = useGetFinancialTrendQuery(6)
-  const { data: attendanceData, isLoading: attendanceLoading } = useGetAttendanceTrendQuery(7)
-  const { data: groupsData,     isLoading: groupsLoading     } = useGetGroupsPerformanceQuery(period)
+  const {
+    data: financialData,
+    isLoading: financialLoading,
+    isFetching: financialFetching,
+  } = useGetFinancialTrendQuery(6)
+  const {
+    data: attendanceData,
+    isLoading: attendanceLoading,
+    isFetching: attendanceFetching,
+  } = useGetAttendanceTrendQuery(7)
+  const {
+    data:       groupsData,
+    isLoading:   groupsLoading,
+    isFetching:  groupsFetching,
+  } = useGetGroupsPerformanceQuery(period)
 
-  const overview = overviewData?.data
+  const overview = useStaleQueryData(
+    overviewData?.data as DashboardOverview | undefined,
+    overviewFetching,
+  )
 
-  // ── Loading ────────────────────────────────────────────────────────────────
-  if (overviewLoading) return <DashboardSkeleton />
+  const groupsFresh = groupsData?.data
+    ? (groupsData.data.groups ?? [])
+    : undefined
+  const groups = useStaleQueryData(groupsFresh, groupsFetching, []) ?? []
+
+  const isFetching = overviewFetching || groupsFetching
+
+  // ── Loading (first load only — keep prior period visible while refetching) ─
+  if (overviewLoading && !overview) return <DashboardSkeleton />
 
   // ── Error ──────────────────────────────────────────────────────────────────
-  if (overviewError || !overview) {
+  if (!overview) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center" dir="rtl">
-        <p className="font-semibold text-slate-900">تعذر تحميل بيانات لوحة التحكم</p>
+        <p className="font-semibold text-slate-900">
+          {overviewError
+            ? 'تعذر تحميل بيانات لوحة التحكم'
+            : 'لا توجد بيانات لهذه الفترة'}
+        </p>
         <button
           onClick={() => refetch()}
           className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
@@ -75,7 +104,6 @@ export function DashboardPage() {
 
   const financialTrend  = financialData?.data.trend  ?? []
   const attendanceTrend = attendanceData?.data.trend ?? []
-  const groups          = groupsData?.data.groups    ?? []
 
   // Safe defaults — API may omit nested objects if data is empty
   const todaySessions   = overview.todaySessions   ?? { total: 0, scheduled: 0, completed: 0, cancelled: 0 }
@@ -86,7 +114,10 @@ export function DashboardPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" dir="rtl">
+    <div
+      className={`space-y-6 transition-opacity ${isFetching ? 'opacity-60' : ''}`}
+      dir="rtl"
+    >
 
       {/* ── Page header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -174,13 +205,24 @@ export function DashboardPage() {
 
       {/* ── Charts ── */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <FinancialTrendChart  data={financialTrend}  loading={financialLoading}  />
-        <AttendanceTrendChart data={attendanceTrend} loading={attendanceLoading} />
+        <FinancialTrendChart
+          data={financialTrend}
+          loading={financialLoading}
+          fetching={financialFetching}
+        />
+        <AttendanceTrendChart
+          data={attendanceTrend}
+          loading={attendanceLoading}
+          fetching={attendanceFetching}
+        />
       </div>
 
       {/* ── Groups + payments ── */}
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
-        <GroupsPerformance groups={groups} loading={groupsLoading} />
+        <GroupsPerformance
+          groups={groups}
+          loading={groupsLoading && groups.length === 0}
+        />
         <div className="lg:w-80">
           <RecentPayments payments={recentPayments} />
         </div>

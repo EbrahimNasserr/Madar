@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import type { GroupQuizPerformance } from "@/src/lib/api/quizzesApi";
+import { useStaleQueryData } from "@/src/lib/hooks/useStaleQueryData";
 import { useGetGroupQuizPerformanceQuery } from "@/src/lib/api/quizzesApi";
 import type { GroupStudentPerformanceEntry } from "@/src/lib/api/quizzesApi";
 import { getCurrentBillingPeriod } from "@/src/lib/date/billingPeriod";
@@ -99,24 +101,34 @@ type Props = { groupId: string };
 export default function GroupQuizPerformance({ groupId }: Props) {
   const [period, setPeriod] = useState(getCurrentBillingPeriod);
 
-  const { data, isLoading, isError } = useGetGroupQuizPerformanceQuery({
+  const { data, isLoading, isFetching } = useGetGroupQuizPerformanceQuery({
     groupId,
     period,
   });
 
-  if (isLoading) {
+  const perf = useStaleQueryData(
+    data?.data as GroupQuizPerformance | undefined,
+    isFetching,
+  );
+
+  if (isLoading && !perf) {
     return <div className="h-96 animate-pulse rounded-2xl bg-slate-100" />;
   }
 
-  if (isError || !data?.data) {
+  if (!perf) {
     return <ErrorState description="تعذر تحميل أداء المجموعة." />;
   }
-
-  const perf = data.data;
-  const { summary, quizzes, topPerformers, needsAttention } = perf;
+  const {
+    summary,
+    quizzes = [],
+    topPerformers = [],
+    needsAttention = [],
+  } = perf;
 
   return (
-    <section className="space-y-6">
+    <section
+      className={`space-y-6 transition-opacity ${isFetching ? "opacity-60" : ""}`}
+    >
       {/* Header + period picker */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>

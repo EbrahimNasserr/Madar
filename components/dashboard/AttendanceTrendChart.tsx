@@ -13,8 +13,9 @@ import type { AttendanceTrendItem } from '@/src/lib/api/dashboardApi'
 import { formatArabicDateShort } from '@/src/lib/date/formatDate'
 
 type AttendanceTrendChartProps = {
-  data:     AttendanceTrendItem[]
-  loading?: boolean
+  data:      AttendanceTrendItem[]
+  loading?:  boolean
+  fetching?: boolean
 }
 
 type ChartTooltipProps = {
@@ -33,7 +34,11 @@ const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   )
 }
 
-export function AttendanceTrendChart({ data, loading }: AttendanceTrendChartProps) {
+export function AttendanceTrendChart({
+  data,
+  loading,
+  fetching,
+}: AttendanceTrendChartProps) {
   // Format dates for display
   const formatted = data.map((item) => ({
     ...item,
@@ -43,7 +48,11 @@ export function AttendanceTrendChart({ data, loading }: AttendanceTrendChartProp
   }))
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+    <div
+      className={`rounded-2xl border border-slate-200 bg-white p-5 transition-opacity ${
+        fetching ? 'opacity-60' : ''
+      }`}
+    >
       <h2 className="font-bold text-slate-900">اتجاه الحضور</h2>
       <p className="mt-0.5 text-xs text-slate-400">نسبة الحضور خلال آخر 7 أيام</p>
 

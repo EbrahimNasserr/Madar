@@ -76,7 +76,11 @@ export function StudentsTable({
 
       {/* Data table */}
       {!isLoading && !isError && students.length > 0 && (
-        <div className="overflow-x-auto">
+        <div
+          className={`overflow-x-auto transition-opacity ${
+            isFetching ? 'opacity-60' : ''
+          }`}
+        >
           <table className="w-full text-right text-sm" role="table">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wide">
