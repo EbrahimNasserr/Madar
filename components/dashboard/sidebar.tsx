@@ -13,6 +13,7 @@ import {
   Home,
   X,
 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAppSelector } from '@/src/lib/store/hooks'
 import { useApp, type AppView } from './app-context'
@@ -37,13 +38,15 @@ interface SidebarProps {
 }
 
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
-  const { plan, togglePlan, setIsQuickAddOpen } = useApp()
+  const { setIsQuickAddOpen } = useApp()
   const user     = useAppSelector((state) => state.auth.user)
   const router   = useRouter()
   const pathname = usePathname()
 
   const { data: subscriptionData } = useGetSubscriptionQuery()
-  const activeFeatures = subscriptionData?.data.subscription.features ?? []
+  const subscription = subscriptionData?.data.subscription
+  const plan = subscription?.plan ?? 'basic'
+  const activeFeatures = subscription?.features ?? []
 
   const currentView = (pathname.split('/').filter(Boolean)[0] ?? 'dashboard') as AppView
 
@@ -123,12 +126,13 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               <span>الاشتراك الحالي:</span>
               <span className="font-bold text-[#3157D5] uppercase">{plan}</span>
             </p>
-            <button
-              onClick={togglePlan}
-              className="w-full bg-[#3157D5] text-white text-xs py-2 rounded-lg font-bold shadow-sm hover:bg-[#243FA3] transition-all"
+            <Link
+              href="/subscription"
+              onClick={onClose}
+              className="block w-full text-center bg-[#3157D5] text-white text-xs py-2 rounded-lg font-bold shadow-sm hover:bg-[#243FA3] transition-all"
             >
-              {plan === 'basic' ? 'الترقية لـ Pro' : 'التحويل إلى Basic'}
-            </button>
+              {plan === 'basic' ? 'الترقية لـ Pro' : 'إدارة الاشتراك'}
+            </Link>
           </div>
 
           {/* Profile row */}

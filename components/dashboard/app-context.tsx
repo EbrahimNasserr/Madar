@@ -4,7 +4,6 @@
 // AppContext — lightweight UI-level state for the dashboard shell.
 //
 // Owns:
-//   - plan toggle (basic / pro preview)
 //   - quick-add modal open state (and the in-memory demo data it operates on)
 //   - notifications (seed data; will be replaced with a real API)
 //   - global search modal open state
@@ -67,10 +66,6 @@ interface AppContextValue {
   addStudent: (input: AddStudentInput) => void
   addGroup:   (input: AddGroupInput) => void
 
-  // Plan
-  plan:       'basic' | 'pro'
-  togglePlan: () => void
-
   // Notifications
   notifications:           Notification[]
   unreadNotificationCount: number
@@ -120,12 +115,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [groups,   setGroups]   = useState<QuickAddGroup[]>([])
   const [students, setStudents] = useState<QuickAddStudent[]>([])
 
-  const [plan,          setPlan]          = useState<'basic' | 'pro'>('basic')
   const [notifications, setNotifications] = useState<Notification[]>(SEED_NOTIFICATIONS)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isSearchOpen,   setIsSearchOpen]   = useState(false)
-
-  const togglePlan = () => setPlan((p) => (p === 'basic' ? 'pro' : 'basic'))
 
   const unreadNotificationCount = notifications.filter((n) => !n.read).length
   const markNotificationsAsRead = () =>
@@ -142,7 +134,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         groups, students,
         addStudent, addGroup,
-        plan, togglePlan,
         notifications, unreadNotificationCount, markNotificationsAsRead,
         isQuickAddOpen, setIsQuickAddOpen,
         isSearchOpen,   setIsSearchOpen,

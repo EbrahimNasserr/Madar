@@ -7,7 +7,7 @@ import {
   Menu, X, UserCheck, Layers, Award, LineChart, Settings, Home,
 } from 'lucide-react'
 
-import { AppProvider, useApp, type AppView } from '@/components/dashboard/app-context'
+import { AppProvider, type AppView } from '@/components/dashboard/app-context'
 import { Sidebar }       from '@/components/dashboard/sidebar'
 import { Topbar }        from '@/components/dashboard/topbar'
 import { QuickAddModal } from '@/components/dashboard/quick-add-modal'
@@ -27,7 +27,6 @@ const KNOWN_PAGES: string[] = [
 // ─── Inner shell (needs AppContext) ───────────────────────────────────────────
 
 function DashboardShell({ children }: { children?: React.ReactNode }) {
-  const { plan } = useApp()
   const router   = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
