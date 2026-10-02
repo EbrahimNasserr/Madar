@@ -17,6 +17,7 @@ import { Input }   from '@/components/ui/input'
 import { Select }  from '@/components/ui/select'
 import { Spinner } from '@/components/ui/loading'
 import { SCHOOL_TYPE_LABELS, getApiErrorMessage } from './shared/constants'
+import { toast } from 'sonner'
 
 type StudentModalProps = {
   student?: Student
@@ -63,8 +64,11 @@ export function StudentModal({ student, onClose }: StudentModalProps) {
     try {
       if (isEdit && student) {
         await updateStudent({ id: student._id, body: payload }).unwrap()
+        toast
+         .success('تم حفظ بيانات الطالب بنجاح')
       } else {
         await createStudent(payload).unwrap()
+        toast.success('تم إضافة الطالب بنجاح')
       }
       onClose()
     } catch (err) {

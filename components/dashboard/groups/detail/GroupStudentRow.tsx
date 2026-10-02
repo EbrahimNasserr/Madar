@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react'
 import type { Student } from '@/src/lib/api/studentsApi'
 import { useRemoveStudentFromGroupMutation } from '@/src/lib/api/groupsApi'
 import { getApiErrorMessage } from '../shared/constants'
+import { toast } from 'sonner'
 
 type GroupStudentRowProps = {
   student: Student
@@ -19,6 +20,7 @@ export function GroupStudentRow({ student, groupId }: GroupStudentRowProps) {
     setError(null)
     try {
       await removeStudent({ groupId, studentId: student._id }).unwrap()
+      toast.success('تمت الإزالة بنجاح')
     } catch (err) {
       setError(getApiErrorMessage(err))
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import MadarDashboard from "@/components/teacher-os-dashboard";
 import {
   useGetQuizSheetQuery,
@@ -110,7 +111,12 @@ function QuizGradingContent({ id }: { id: string }) {
         ...(r.note ? { note: r.note } : {}),
       }));
 
-    await saveResults({ quizId: id, results: payload }).unwrap();
+    try {
+      await saveResults({ quizId: id, results: payload }).unwrap();
+      toast.success("تم حفظ الدرجات بنجاح");
+    } catch {
+      toast.error("تعذر حفظ الدرجات. حاول مرة أخرى.");
+    }
   };
 
   // ── Loading ───────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
-
+import { toast } from "sonner";
 import { useGetGroupsQuery } from "@/src/lib/api/groupsApi";
 import { useCreateQuizMutation } from "@/src/lib/api/quizzesApi";
 
@@ -37,9 +37,10 @@ export default function QuizCreateModal({ onClose }: Props) {
         quizDate:    form.quizDate,
         totalMarks:  Number(form.totalMarks),
       }).unwrap();
+      toast.success("تم إنشاء الاختبار بنجاح");
       onClose();
     } catch {
-      // errors surfaced by RTK Query
+      toast.error("تعذر إنشاء الاختبار. حاول مرة أخرى.");
     }
   };
 

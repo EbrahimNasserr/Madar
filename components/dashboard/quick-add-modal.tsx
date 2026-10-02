@@ -9,6 +9,7 @@ import {
   useCreateGroupMutation,
   useAddStudentToGroupMutation,
 } from '@/src/lib/api/groupsApi'
+import { toast } from 'sonner'
 
 type Tab = 'student' | 'group'
 
@@ -89,6 +90,9 @@ export function QuickAddModal() {
         studentId: result.data.student._id,
       }).unwrap()
 
+      toast.success('تمت إضافة الطالب بنجاح!')
+
+
       // Reset & close
       setStFirstName('')
       setStLastName('')
@@ -114,6 +118,8 @@ export function QuickAddModal() {
         pricePerSession: grpPrice,
         schedule:        [],
       }).unwrap()
+
+      toast.success('تمت إضافة المجموعة بنجاح!')
 
       setGrpName('')
       setGrpPrice(500)

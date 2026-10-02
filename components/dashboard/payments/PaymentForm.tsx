@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import type { LedgerItem } from '@/src/lib/api/paymentsApi'
 import { usePayPaymentMutation } from '@/src/lib/api/paymentsApi'
+import { toast } from 'sonner'
 
 type PaymentMethod = "cash" | "bank_transfer" | "instapay" | "other"
 
@@ -43,6 +44,7 @@ export function PaymentForm({
         groupId,
         billingPeriod,
       }).unwrap()
+      toast.success('تم تسجيل الدفعة بنجاح.')
       onSuccess()
     } catch {
       setError('تعذر تسجيل الدفعة. حاول مرة أخرى.')

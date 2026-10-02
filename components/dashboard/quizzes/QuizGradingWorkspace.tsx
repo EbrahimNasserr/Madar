@@ -10,6 +10,7 @@ import {
   useSaveQuizResultsMutation,
   type QuizResultStatus,
 } from "@/src/lib/api/quizzesApi";
+import { toast } from "sonner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -205,6 +206,8 @@ export function QuizGradingWorkspace({ params }: Props) {
         })),
       }).unwrap();
       setSavedOnce(true);
+      toast
+       .success("تم حفظ الدرجات بنجاح!");
     } catch {
       // error state handled by RTK Query
     }

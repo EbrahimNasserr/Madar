@@ -6,6 +6,7 @@ import { useDeleteStudentMutation, type Student } from '@/src/lib/api/studentsAp
 import { Modal, ModalError } from '@/components/ui/Modal'
 import { Spinner } from '@/components/ui/loading'
 import { getApiErrorMessage } from './shared/constants'
+import { toast } from 'sonner'
 
 type DeleteModalProps = {
   student: Student
@@ -20,6 +21,8 @@ export function DeleteModal({ student, onClose }: DeleteModalProps) {
     setError(null)
     try {
       await deleteStudent(student._id).unwrap()
+      toast
+        .success('تم حذف الطالب بنجاح')
       onClose()
     } catch (err) {
       setError(getApiErrorMessage(err))

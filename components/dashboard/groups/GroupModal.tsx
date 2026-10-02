@@ -9,6 +9,7 @@ import {
 import { Modal, ModalBody, ModalError } from '@/components/ui/Modal'
 import { GroupForm } from './GroupForm'
 import { getApiErrorMessage } from './shared/constants'
+import { toast } from 'sonner'
 
 type GroupModalProps = {
   group?:  Group   // present → edit mode
@@ -29,8 +30,10 @@ export function GroupModal({ group, onClose }: GroupModalProps) {
     try {
       if (isEdit && group) {
         await updateGroup({ id: group._id, body: data }).unwrap()
+        toast.success('تم تعديل المجموعة بنجاح')
       } else {
         await createGroup(data).unwrap()
+        toast.success('تم إنشاء المجموعة بنجاح')
       }
       onClose()
     } catch (err) {

@@ -20,6 +20,7 @@ import FeatureGuard                  from '@/components/auth/FeatureGuard'
 import { FEATURES }                  from '@/src/constants/features'
 import GroupQuizPerformance          from '@/components/dashboard/quizzes/GroupQuizPerformance'
 import ProFeatureCard                from '@/components/subscription/ProFeatureCard'
+import { toast }                     from 'sonner'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -58,9 +59,11 @@ export function GroupDetailsPage({ params }: Props) {
     setSessionError(null)
     try {
       await createSession(data).unwrap()
+      toast.success('تم إنشاء الحصة بنجاح')
       setCreateSessionOpen(false)
     } catch (err) {
       setSessionError(getApiErrorMessage(err))
+      toast.error(getApiErrorMessage(err))
     }
   }
 
