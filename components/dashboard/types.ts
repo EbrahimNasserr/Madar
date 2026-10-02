@@ -5,6 +5,7 @@ export type PageKey =
   | 'sessions'
   | 'attendance'
   | 'payments'
+  | 'expenses'
   | 'quizzes'
   | 'reports'
   | 'settings'

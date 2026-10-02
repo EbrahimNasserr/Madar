@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import MadarDashboard from '@/components/teacher-os-dashboard'
+import { ReportsPage } from '@/components/dashboard/reports/ReportsPage'
 
 export const metadata: Metadata = {
   title: 'التقارير',
@@ -7,4 +8,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function ReportsPage() { return <MadarDashboard /> }
+export default function ReportsRoute() {
+  return (
+    <MadarDashboard>
+      <ReportsPage />
+    </MadarDashboard>
+  )
+}

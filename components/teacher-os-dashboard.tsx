@@ -21,7 +21,7 @@ import type { PageKey }  from '@/components/dashboard/types'
 // Routes the shell renders inline (everything else uses the `children` prop)
 const KNOWN_PAGES: string[] = [
   'dashboard', 'attendance', 'students', 'groups',
-  'payments', 'quizzes', 'sessions', 'reports', 'settings',
+  'payments', 'expenses', 'quizzes', 'sessions', 'reports', 'settings',
 ]
 
 // ─── Inner shell (needs AppContext) ───────────────────────────────────────────
@@ -55,14 +55,12 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
         <Topbar onMenuToggle={() => setMobileOpen((o) => !o)} />
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {!isNested && pageKey === 'students' && <StudentsPage />}
-          {!isNested && pageKey === 'groups'   && <GroupsPage />}
-          {!isNested && pageKey === 'payments' && <PaymentsPage />}
-          {!isNested && pageKey === 'sessions' && <SessionsPage />}
-          {!isNested && pageKey === 'quizzes'  && children}
-          {!isNested && (pageKey === 'reports' || pageKey === 'settings') && (
-            <SimplePage page={pageKey} />
-          )}
+          {!isNested && pageKey === 'students'  && <StudentsPage />}
+          {!isNested && pageKey === 'groups'    && <GroupsPage />}
+          {!isNested && pageKey === 'payments'  && <PaymentsPage />}
+          {!isNested && pageKey === 'sessions'  && <SessionsPage />}
+          {!isNested && (pageKey === 'quizzes' || pageKey === 'expenses' || pageKey === 'reports') && children}
+          {!isNested && pageKey === 'settings'  && <SimplePage page={pageKey} />}
           {/* dashboard home + nested/dynamic routes use the passed children */}
           {(pageKey === 'dashboard' || isNested || !KNOWN_PAGES.includes(segment)) && children}
         </main>

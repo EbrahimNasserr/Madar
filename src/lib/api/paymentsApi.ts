@@ -103,6 +103,7 @@ export const paymentsApi = baseApi.injectEndpoints({
         { type: "Dashboard", id: "OVERVIEW"           },
         { type: "Dashboard", id: "FINANCIAL_TREND"    },
         { type: "Dashboard", id: "GROUPS_PERFORMANCE" },
+        { type: "Reports",   id: "OVERVIEW"           },
       ],
     }),
 
@@ -149,7 +150,7 @@ export const paymentsApi = baseApi.injectEndpoints({
         body:   { amount, paymentMethod, notes },
       }),
       invalidatesTags: (_result, _error, args) => {
-        const tags: { type: "Payments" | "Dashboard"; id: string }[] = []
+        const tags: { type: "Payments" | "Dashboard" | "Reports"; id: string }[] = []
 
         if (args.sessionId) {
           tags.push({ type: "Payments", id: `SESSION-${args.sessionId}` })
@@ -164,6 +165,7 @@ export const paymentsApi = baseApi.injectEndpoints({
         tags.push({ type: "Dashboard", id: "OVERVIEW"           })
         tags.push({ type: "Dashboard", id: "FINANCIAL_TREND"    })
         tags.push({ type: "Dashboard", id: "GROUPS_PERFORMANCE" })
+        tags.push({ type: "Reports",   id: "OVERVIEW"           })
         return tags
       },
     }),
@@ -173,7 +175,7 @@ export const paymentsApi = baseApi.injectEndpoints({
         url:    `/payments/${paymentId}/cancel`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Payments"],
+      invalidatesTags: ["Payments", { type: "Reports", id: "OVERVIEW" }],
     }),
 
     // ── Student history ─────────────────────────────────────────────────────
