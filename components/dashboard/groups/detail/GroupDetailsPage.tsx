@@ -16,6 +16,10 @@ import { GroupDetailHeader }         from './GroupDetailHeader'
 import { GroupSchedule }             from './GroupSchedule'
 import { GroupStudentsList }         from './GroupStudentsList'
 import { GroupSessionsList }         from './GroupSessionsList'
+import FeatureGuard                  from '@/components/auth/FeatureGuard'
+import { FEATURES }                  from '@/src/constants/features'
+import GroupQuizPerformance          from '@/components/dashboard/quizzes/GroupQuizPerformance'
+import ProFeatureCard                from '@/components/subscription/ProFeatureCard'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -105,6 +109,19 @@ export function GroupDetailsPage({ params }: Props) {
         availableStudents={availableStudents}
         isLoading={studentsLoading}
       />
+
+      {/* Quiz performance analytics — advanced_analytics feature */}
+      <FeatureGuard
+        feature={FEATURES.ADVANCED_ANALYTICS}
+        fallback={
+          <ProFeatureCard
+            title="تحليلات الاختبارات"
+            description="تابع أداء المجموعة والطلاب عبر الاختبارات مع مَدار Pro."
+          />
+        }
+      >
+        <GroupQuizPerformance groupId={id} />
+      </FeatureGuard>
 
       {/* ── Create session modal ── */}
       {createSessionOpen && (

@@ -34,6 +34,88 @@ export type QuizSheetItem = {
   result: QuizResult | null;
 };
 
+// ─── Performance types ────────────────────────────────────────────────────────
+
+export type StudentQuizHistoryItem = {
+  quizId: string;
+  quizTitle: string;
+  quizDate: string;
+  group: {
+    _id: string;
+    name: string;
+    subject: string;
+    grade?: string;
+  };
+  status: "graded" | "absent";
+  score: number;
+  percentage: number;
+};
+
+export type StudentQuizPerformance = {
+  student: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    grade?: string;
+  };
+  summary: {
+    totalQuizzes: number;
+    gradedCount: number;
+    absentCount: number;
+    averagePercentage: number;
+    bestPercentage: number;
+    lowestPercentage: number;
+    latestPercentage: number;
+    trendDirection: "improving" | "stable" | "declining" | null;
+  };
+  trend: StudentQuizHistoryItem[]; // API calls the history array "trend"
+};
+
+export type GroupQuizPerformanceItem = {
+  quizId: string;
+  title: string;        // API returns "title", not "quizTitle"
+  quizDate: string;
+  totalMarks: number;
+  averagePercentage: number;
+  graded: number;       // API returns "graded", not "gradedCount"
+  absent: number;       // API returns "absent", not "absentCount"
+};
+
+export type GroupStudentPerformanceEntry = {
+  rank: number;
+  student: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    grade?: string;
+  };
+  gradedCount: number;
+  absentCount: number;
+  averagePercentage: number;
+};
+
+export type GroupQuizPerformance = {
+  group: {
+    _id: string;
+    name: string;
+    subject: string;
+    grade?: string;
+    status: string;
+  };
+  period: string;
+  summary: {
+    totalQuizzes: number;
+    gradedResults: number;
+    absentResults: number;
+    averagePercentage: number;
+    topPercentage: number;
+  };
+  quizzes: GroupQuizPerformanceItem[];
+  students: GroupStudentPerformanceEntry[];
+  topPerformers: GroupStudentPerformanceEntry[];
+  needsAttention: GroupStudentPerformanceEntry[];
+};
+
 // ─── Response shapes ──────────────────────────────────────────────────────────
 
 type QuizzesResponse = {
@@ -52,6 +134,21 @@ type QuizSheetResponse = {
     quiz: Quiz;
     students: QuizSheetItem[];
   };
+};
+
+type StudentQuizHistoryResponse = {
+  success: boolean;
+  data: { history: StudentQuizHistoryItem[] };
+};
+
+type StudentQuizPerformanceResponse = {
+  success: boolean;
+  data: StudentQuizPerformance;
+};
+
+type GroupQuizPerformanceResponse = {
+  success: boolean;
+  data: GroupQuizPerformance;
 };
 
 // ─── Endpoints ────────────────────────────────────────────────────────────────
@@ -151,7 +248,36 @@ export const quizzesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { quizId }) => [
         { type: "Quizzes", id: `SHEET-${quizId}` },
+        { type: "Quizzes", id: `STATISTICS-${quizId}` },
         { type: "Quizzes", id: quizId },
+        { type: "Quizzes", id: "LIST" },
+      ],
+    }),
+
+    getStudentQuizHistory: builder.query<StudentQuizHistoryResponse, string>({
+      query: (studentId) => `/quizzes/student/${studentId}/history`,
+      providesTags: (_result, _error, studentId) => [
+        { type: "Quizzes", id: `STUDENT-HISTORY-${studentId}` },
+      ],
+    }),
+
+    getStudentQuizPerformance: builder.query<StudentQuizPerformanceResponse, string>({
+      query: (studentId) => `/quizzes/student/${studentId}/performance`,
+      providesTags: (_result, _error, studentId) => [
+        { type: "Quizzes", id: `STUDENT-PERFORMANCE-${studentId}` },
+      ],
+    }),
+
+    getGroupQuizPerformance: builder.query<
+      GroupQuizPerformanceResponse,
+      { groupId: string; period?: string }
+    >({
+      query: ({ groupId, period }) => ({
+        url: `/quizzes/group/${groupId}/performance`,
+        params: period ? { period } : undefined,
+      }),
+      providesTags: (_result, _error, { groupId, period }) => [
+        { type: "Quizzes", id: `GROUP-PERFORMANCE-${groupId}-${period ?? "ALL"}` },
       ],
     }),
   }),
@@ -167,4 +293,7 @@ export const {
   useArchiveQuizMutation,
   useGetQuizSheetQuery,
   useSaveQuizResultsMutation,
+  useGetStudentQuizHistoryQuery,
+  useGetStudentQuizPerformanceQuery,
+  useGetGroupQuizPerformanceQuery,
 } = quizzesApi;

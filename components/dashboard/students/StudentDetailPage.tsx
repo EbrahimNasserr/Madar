@@ -8,6 +8,9 @@ import { StudentFinancialHistory } from './StudentFinancialHistory'
 import { StatusBadge } from './shared/StatusBadge'
 import { Avatar } from './shared/Avatar'
 import { SCHOOL_TYPE_LABELS } from './shared/constants'
+import FeatureGuard from '@/components/auth/FeatureGuard'
+import { FEATURES } from '@/src/constants/features'
+import StudentQuizPerformance from '@/components/dashboard/quizzes/StudentQuizPerformance'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -99,6 +102,11 @@ export function StudentDetailPage({ params }: Props) {
         <h2 className="font-bold text-slate-900">السجل المالي</h2>
         <StudentFinancialHistory studentId={id} />
       </div>
+
+      {/* Quiz performance — Pro only */}
+      <FeatureGuard feature={FEATURES.QUIZZES}>
+        <StudentQuizPerformance studentId={id} />
+      </FeatureGuard>
     </div>
   )
 }
