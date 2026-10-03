@@ -71,7 +71,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
       <aside
         className={[
-          'hidden lg:flex flex-col w-64 xl:w-72 bg-white border-l border-[#E5E7EB]',
+          'flex flex-col w-64 xl:w-72 bg-white border-l border-[#E5E7EB]',
           'px-3.5 pt-5 pb-4 shrink-0',
           'lg:sticky top-0 right-0 h-screen z-40 transition-transform duration-200',
           'lg:translate-x-0 lg:h-screen',

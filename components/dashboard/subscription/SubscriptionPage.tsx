@@ -12,9 +12,12 @@ import {
   X,
   ArrowLeft,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import PageHeader from '@/components/ui/PageHeader'
 import PageSkeleton from '@/components/ui/PageSkeleton'
 import { useGetSubscriptionQuery } from '@/src/lib/api/subscriptionApi'
+import { useCreateCheckoutMutation, type PlanId } from '@/src/lib/api/billingApi'
+import { getApiErrorMessage } from '@/src/lib/api/error'
 import { FEATURES } from '@/src/constants/features'
 import { formatArabicDateShort } from '@/src/lib/date/formatDate'
 
@@ -74,13 +77,15 @@ function PlanCard({
   tier,
   price,
   features,
-  href,
+  onChoose,
+  loading,
   highlighted,
 }: {
   tier: 'basic' | 'pro'
   price: number
   features: string[]
-  href: string
+  onChoose: (plan: PlanId) => void
+  loading: boolean
   highlighted?: boolean
 }) {
   const isBasic = tier === 'basic'
@@ -138,21 +143,27 @@ function PlanCard({
       </ul>
 
       {/* CTA */}
-      <Link
-        href={href}
-        className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all ${
+      <button
+        type="button"
+        disabled={loading}
+        onClick={() => onChoose(tier)}
+        className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all disabled:opacity-60 ${
           highlighted
             ? 'bg-[#3157D5] text-white shadow-md shadow-[#3157D5]/20 hover:bg-[#243FA3]'
             : 'border border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100'
         }`}
       >
-        {isBasic ? 'اشترك في Basic' : (
+        {loading ? (
+          <RefreshCw className="h-4 w-4 animate-spin" />
+        ) : isBasic ? (
+          'اشترك في Basic'
+        ) : (
           <>
             <span>اشترك في Pro</span>
             <ArrowLeft className="h-4 w-4" />
           </>
         )}
-      </Link>
+      </button>
     </div>
   )
 }
@@ -161,6 +172,18 @@ function PlanCard({
 
 function TrialView({ trialEndsAt }: { trialEndsAt: string }) {
   const days = daysUntil(trialEndsAt)
+
+  const [createCheckout, { isLoading: checkoutLoading }] =
+    useCreateCheckoutMutation()
+
+  const handleChoose = async (plan: PlanId) => {
+    try {
+      const res = await createCheckout({ plan, billingCycle: 'monthly' }).unwrap()
+      window.location.href = res.data.checkoutUrl
+    } catch (error) {
+      toast.error(getApiErrorMessage(error))
+    }
+  }
 
   return (
     <section className="space-y-8 animate-[appear_0.28s_ease-out]" dir="rtl">
@@ -203,13 +226,15 @@ function TrialView({ trialEndsAt }: { trialEndsAt: string }) {
             tier="basic"
             price={199}
             features={BASIC_FEATURES}
-            href="/checkout?plan=basic"
+            onChoose={handleChoose}
+            loading={checkoutLoading}
           />
           <PlanCard
             tier="pro"
             price={349}
             features={PRO_FEATURES}
-            href="/checkout?plan=pro"
+            onChoose={handleChoose}
+            loading={checkoutLoading}
             highlighted
           />
         </div>
@@ -221,6 +246,17 @@ function TrialView({ trialEndsAt }: { trialEndsAt: string }) {
 // ─── Expired Trial View ───────────────────────────────────────────────────────
 
 function ExpiredView() {
+  const [createCheckout, { isLoading: checkoutLoading }] =
+    useCreateCheckoutMutation()
+
+  const handleChoose = async (plan: PlanId) => {
+    try {
+      const res = await createCheckout({ plan, billingCycle: 'monthly' }).unwrap()
+      window.location.href = res.data.checkoutUrl
+    } catch (error) {
+      toast.error(getApiErrorMessage(error))
+    }
+  }
   return (
     <section className="space-y-8 animate-[appear_0.28s_ease-out]" dir="rtl">
       <PageHeader
@@ -244,13 +280,15 @@ function ExpiredView() {
           tier="basic"
           price={199}
           features={BASIC_FEATURES}
-          href="/checkout?plan=basic"
+          onChoose={handleChoose}
+          loading={checkoutLoading}
         />
         <PlanCard
           tier="pro"
           price={349}
           features={PRO_FEATURES}
-          href="/checkout?plan=pro"
+          onChoose={handleChoose}
+          loading={checkoutLoading}
           highlighted
         />
       </div>

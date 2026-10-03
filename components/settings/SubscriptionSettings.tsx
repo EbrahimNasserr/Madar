@@ -1,34 +1,40 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Check, RefreshCw } from "lucide-react";
 import { useGetSubscriptionQuery } from "@/src/lib/api/subscriptionApi";
 import {
   useCreateCheckoutMutation,
   useGetBillingPlansQuery,
+  useDowngradeSubscriptionMutation,
+  useCancelScheduledPlanChangeMutation,
+  useCancelSubscriptionMutation,
+  useReactivateSubscriptionMutation,
   type PlanId,
 } from "@/src/lib/api/billingApi";
 import { getApiErrorMessage } from "@/src/lib/api/error";
 import { formatMoney } from "@/src/lib/formatters/money";
 import { formatArabicDateShort } from "@/src/lib/date/formatDate";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import BillingHistory from "../dashboard/subscription/BillingHistory";
 
 // ─── Feature label map ────────────────────────────────────────────────────────
 
 function featureLabel(feature: string): string {
   const labels: Record<string, string> = {
-    students:            "إدارة الطلاب",
-    groups:              "المجموعات",
-    sessions:            "الحصص",
-    attendance:          "الحضور",
-    payments:            "المدفوعات",
-    expenses:            "المصروفات",
-    dashboard:           "لوحة التحكم",
-    reports:             "التقارير",
-    quizzes:             "الاختبارات",
-    grades:              "الدرجات",
-    advanced_analytics:  "التحليلات المتقدمة",
+    students:           "إدارة الطلاب",
+    groups:             "المجموعات",
+    sessions:           "الحصص",
+    attendance:         "الحضور",
+    payments:           "المدفوعات",
+    expenses:           "المصروفات",
+    dashboard:          "لوحة التحكم",
+    reports:            "التقارير",
+    quizzes:            "الاختبارات",
+    grades:             "الدرجات",
+    advanced_analytics: "التحليلات المتقدمة",
   };
   return labels[feature] ?? feature;
 }
@@ -44,6 +50,7 @@ function CurrentSubscriptionCard({
     trial: { active: boolean; endsAt?: string; daysRemaining?: number };
     currentPeriod: { startsAt: string | null; endsAt: string | null };
     cancelAtPeriodEnd: boolean;
+    nextPlan: "basic" | "pro" | null;
   };
 }) {
   if (subscription.status === "trial") {
@@ -104,6 +111,63 @@ function CurrentSubscriptionCard({
   }
 
   if (subscription.status === "active") {
+    const planName =
+      subscription.plan === "pro" ? "Madar Pro" : "Madar Basic";
+
+    // Scheduled downgrade: next cycle will switch to basic
+    if (subscription.nextPlan === "basic") {
+      return (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+          <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-amber-800">
+            SCHEDULED CHANGE
+          </span>
+
+          <h2 className="mt-4 text-2xl font-black text-slate-950">
+            {planName}
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-700">
+            سيتم تحويل خطتك إلى{" "}
+            <strong>Basic</strong>
+            {subscription.currentPeriod.endsAt && (
+              <>
+                {" "}في{" "}
+                <strong>
+                  {formatArabicDateShort(subscription.currentPeriod.endsAt)}
+                </strong>
+              </>
+            )}
+            .
+          </p>
+        </div>
+      );
+    }
+
+    // Cancelled (will not renew)
+    if (subscription.cancelAtPeriodEnd) {
+      return (
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+          <span className="inline-flex rounded-full bg-slate-200 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-slate-700">
+            CANCELLED
+          </span>
+
+          <h2 className="mt-4 text-2xl font-black text-slate-950">
+            تم إلغاء التجديد التلقائي
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-600">
+            يمكنك استخدام {planName} حتى:{" "}
+            {subscription.currentPeriod.endsAt && (
+              <strong className="text-slate-900">
+                {formatArabicDateShort(subscription.currentPeriod.endsAt)}
+              </strong>
+            )}
+          </p>
+        </div>
+      );
+    }
+
+    // Normal active
     return (
       <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
         <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-800">
@@ -111,19 +175,13 @@ function CurrentSubscriptionCard({
         </span>
 
         <h2 className="mt-4 text-2xl font-black text-slate-950">
-          Madar {subscription.plan === "pro" ? "Pro" : "Basic"}
+          {planName}
         </h2>
 
         {subscription.currentPeriod.endsAt && (
           <p className="mt-2 text-sm text-slate-600">
             التجديد القادم:{" "}
             {formatArabicDateShort(subscription.currentPeriod.endsAt)}
-          </p>
-        )}
-
-        {subscription.cancelAtPeriodEnd && (
-          <p className="mt-2 text-xs font-medium text-amber-700">
-            ⚠ الاشتراك سيُلغى في نهاية الفترة الحالية ولن يُجدَّد تلقائيًا.
           </p>
         )}
       </div>
@@ -241,9 +299,7 @@ function PlanCard({
         ) : (
           <>
             {ctaLabel}
-            {!isCurrent && isPro && (
-              <ArrowLeft className="h-4 w-4" />
-            )}
+            {!isCurrent && isPro && <ArrowLeft className="h-4 w-4" />}
           </>
         )}
       </Button>
@@ -267,8 +323,26 @@ export default function SubscriptionSettings() {
   const [createCheckout, { isLoading: checkoutLoading }] =
     useCreateCheckoutMutation();
 
+  const [downgradeSubscription, { isLoading: isDowngrading }] =
+    useDowngradeSubscriptionMutation();
+
+  const [cancelScheduledPlanChange, { isLoading: isCancellingChange }] =
+    useCancelScheduledPlanChangeMutation();
+
+  const [cancelSubscription, { isLoading: isCancelling }] =
+    useCancelSubscriptionMutation();
+
+  const [reactivateSubscription, { isLoading: isReactivating }] =
+    useReactivateSubscriptionMutation();
+
+  // Dialog state
+  const [downgradeOpen, setDowngradeOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+
   const subscription = subscriptionData?.data.subscription;
   const plans = plansData?.data.plans ?? [];
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleChoosePlan = async (planId: PlanId) => {
     try {
@@ -281,6 +355,46 @@ export default function SubscriptionSettings() {
       toast.error(getApiErrorMessage(error));
     }
   };
+
+  const handleDowngrade = async () => {
+    try {
+      await downgradeSubscription().unwrap();
+      setDowngradeOpen(false);
+      toast.success("سيتم التحويل إلى Basic مع بداية دورة الفوترة القادمة.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleCancelPlanChange = async () => {
+    try {
+      await cancelScheduledPlanChange().unwrap();
+      toast.success("تم إلغاء التغيير المجدول، ستبقى على Pro.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      await cancelSubscription().unwrap();
+      setCancelOpen(false);
+      toast.success("تم إلغاء التجديد التلقائي.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleReactivate = async () => {
+    try {
+      await reactivateSubscription().unwrap();
+      toast.success("تم إعادة تفعيل الاشتراك.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
+  };
+
+  // ── Loading skeleton ───────────────────────────────────────────────────────
 
   if (subscriptionLoading || plansLoading) {
     return (
@@ -297,48 +411,196 @@ export default function SubscriptionSettings() {
   if (!subscription) return null;
 
   const isInTrial = subscription.status === "trial";
+  const isActivePro =
+    subscription.status === "active" && subscription.plan === "pro";
+  const isActiveBasic =
+    subscription.status === "active" && subscription.plan === "basic";
+  const isCancelled =
+    subscription.status === "active" && subscription.cancelAtPeriodEnd;
+  const hasScheduledDowngrade =
+    subscription.status === "active" && subscription.nextPlan === "basic";
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-6" dir="rtl">
-      {/* Current status */}
+      {/* Current status card */}
       <CurrentSubscriptionCard subscription={subscription} />
 
-      {/* Plan picker */}
-      <section>
-        <div className="mb-5">
-          <h2 className="text-lg font-bold text-slate-950">اختر باقتك</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            {isInTrial
-              ? "اختر الباقة المناسبة علشان تكمل استخدام مَدار بعد انتهاء التجربة."
-              : "يمكنك تغيير باقتك في أي وقت."}
-          </p>
+      {/* ── Pro → Basic downgrade action ── */}
+      {isActivePro && !hasScheduledDowngrade && !isCancelled && (
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-800">
+              التغيير إلى Basic
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              سيُطبَّق التغيير مع بداية دورة الفوترة القادمة.
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => setDowngradeOpen(true)}
+            disabled={isDowngrading}
+          >
+            التغيير إلى Basic
+          </Button>
         </div>
+      )}
 
-        {plans.length === 0 ? (
-          <p className="text-sm text-slate-500">لا توجد خطط متاحة حاليًا.</p>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-2">
-            {plans.map((plan) => {
-              const isCurrent =
-                subscription.status === "active" &&
-                subscription.plan === plan.id;
-              return (
+      {/* ── Scheduled downgrade banner ── */}
+      {hasScheduledDowngrade && (
+        <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+          <p className="text-sm text-slate-700">
+            سيتم تحويل خطتك إلى{" "}
+            <strong>Basic</strong>
+            {subscription.currentPeriod.endsAt && (
+              <>
+                {" "}في{" "}
+                <strong>
+                  {formatArabicDateShort(subscription.currentPeriod.endsAt)}
+                </strong>
+              </>
+            )}
+          </p>
+          <Button
+            variant="secondary"
+            onClick={handleCancelPlanChange}
+            disabled={isCancellingChange}
+          >
+            {isCancellingChange ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              "البقاء على Pro"
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* ── Basic → Pro upgrade ── */}
+      {isActiveBasic && !isCancelled && (
+        <div className="flex items-center justify-between rounded-2xl border border-indigo-200 bg-indigo-50 px-5 py-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-800">
+              الترقية إلى Pro
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              احصل على التحليلات المتقدمة وكل ميزات مَدار.
+            </p>
+          </div>
+          <Button
+            onClick={() => handleChoosePlan("pro")}
+            disabled={checkoutLoading}
+          >
+            {checkoutLoading ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                Upgrade to Pro
+                <ArrowLeft className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* ── Reactivate banner (after cancel) ── */}
+      {isCancelled && (
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
+          <p className="text-sm text-slate-700">
+            يمكنك إعادة تفعيل الاشتراك في أي وقت قبل انتهاء الفترة الحالية.
+          </p>
+          <Button onClick={handleReactivate} disabled={isReactivating}>
+            {isReactivating ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              "إعادة تفعيل الاشتراك"
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* Plan picker — trial & trial_expired only */}
+      {(isInTrial || subscription.status === "trial_expired") && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-lg font-bold text-slate-950">اختر باقتك</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {isInTrial
+                ? "اختر الباقة المناسبة علشان تكمل استخدام مَدار بعد انتهاء التجربة."
+                : "اختر باقة للاستمرار في استخدام مَدار."}
+            </p>
+          </div>
+
+          {plans.length === 0 ? (
+            <p className="text-sm text-slate-500">لا توجد خطط متاحة حاليًا.</p>
+          ) : (
+            <div className="grid gap-5 lg:grid-cols-2">
+              {plans.map((plan) => (
                 <PlanCard
                   key={plan.id}
                   plan={plan}
-                  isCurrent={isCurrent}
+                  isCurrent={false}
                   isInTrial={isInTrial}
                   onChoose={handleChoosePlan}
                   loading={checkoutLoading}
                 />
-              );
-            })}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Billing history */}
       <BillingHistory />
+
+      {/* ── Danger zone — cancel subscription (active paid only, not trial) ── */}
+      {subscription.status === "active" && !isCancelled && (
+        <section className="rounded-2xl border border-red-200 bg-white p-6">
+          <h2 className="font-bold text-slate-950">إلغاء الاشتراك</h2>
+
+          <p className="mt-2 text-sm text-slate-500">
+            سيظل بإمكانك استخدام مَدار حتى نهاية فترة الاشتراك الحالية.
+          </p>
+
+          <Button
+            variant="destructive"
+            className="mt-5"
+            onClick={() => setCancelOpen(true)}
+          >
+            إلغاء الاشتراك
+          </Button>
+        </section>
+      )}
+
+      {/* ── Confirm: downgrade ── */}
+      <ConfirmDialog
+        open={downgradeOpen}
+        title="التغيير إلى Basic"
+        description="سيتم تطبيق التغيير مع بداية دورة الفوترة القادمة. ستفقد الوصول إلى ميزات Pro بعد انتهاء الفترة الحالية."
+        confirmLabel="تأكيد التغيير"
+        cancelLabel="الرجوع"
+        loading={isDowngrading}
+        onConfirm={handleDowngrade}
+        onCancel={() => setDowngradeOpen(false)}
+      />
+
+      {/* ── Confirm: cancel subscription ── */}
+      <ConfirmDialog
+        open={cancelOpen}
+        title="هل تريد إلغاء اشتراكك؟"
+        description={
+          subscription.currentPeriod.endsAt
+            ? `سيظل حسابك فعالًا حتى ${formatArabicDateShort(subscription.currentPeriod.endsAt)}، وبعدها ستحتاج لاختيار باقة جديدة للاستمرار.`
+            : "سيظل حسابك فعالًا حتى نهاية فترة الاشتراك الحالية، وبعدها ستحتاج لاختيار باقة جديدة للاستمرار."
+        }
+        confirmLabel="تأكيد الإلغاء"
+        cancelLabel="الرجوع"
+        loading={isCancelling}
+        destructive
+        onConfirm={handleCancelSubscription}
+        onCancel={() => setCancelOpen(false)}
+      />
     </div>
   );
 }

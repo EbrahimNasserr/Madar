@@ -65,6 +65,38 @@ export const billingApi = baseApi.injectEndpoints({
       query: () => ({ url: "/billing/history" }),
       providesTags: [{ type: "Billing", id: "HISTORY" }],
     }),
+
+    downgradeSubscription: builder.mutation<unknown, void>({
+      query: () => ({
+        url: "/billing/downgrade",
+        method: "POST",
+      }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    cancelScheduledPlanChange: builder.mutation<unknown, void>({
+      query: () => ({
+        url: "/billing/cancel-plan-change",
+        method: "POST",
+      }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    cancelSubscription: builder.mutation<unknown, void>({
+      query: () => ({
+        url: "/billing/cancel",
+        method: "POST",
+      }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    reactivateSubscription: builder.mutation<unknown, void>({
+      query: () => ({
+        url: "/billing/reactivate",
+        method: "POST",
+      }),
+      invalidatesTags: ["Subscription"],
+    }),
   }),
 });
 
@@ -72,4 +104,8 @@ export const {
   useGetBillingPlansQuery,
   useCreateCheckoutMutation,
   useGetBillingHistoryQuery,
+  useDowngradeSubscriptionMutation,
+  useCancelScheduledPlanChangeMutation,
+  useCancelSubscriptionMutation,
+  useReactivateSubscriptionMutation,
 } = billingApi;
