@@ -120,7 +120,7 @@ export function DashboardPage() {
     >
 
       {/* ── Trial banner ── */}
-      <TrialBanner />
+      {/* <TrialBanner /> */}
 
       {/* ── Page header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

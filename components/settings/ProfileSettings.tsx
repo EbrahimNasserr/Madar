@@ -3,16 +3,24 @@
 import { FormEvent, useEffect, useState } from "react";
 
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
-import { useGetMeQuery, useUpdateMeMutation } from "@/src/lib/api/authApi";
+import { useGetMeQuery, useUpdateMeMutation, useLogoutMutation } from "@/src/lib/api/authApi";
 import { getApiErrorMessage } from "@/src/lib/api/error";
+import { useAppDispatch } from "@/src/lib/store/hooks";
+import { logout } from "@/src/features/auth/authSlice";
+import { tokenStorage } from "@/src/lib/auth/tokenStorage";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function ProfileSettings() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { data, isLoading } = useGetMeQuery();
   const [updateMe, { isLoading: isUpdating }] = useUpdateMeMutation();
+  const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const user = data?.data.user;
 
@@ -46,6 +54,18 @@ export default function ProfileSettings() {
       toast.success("تم تحديث بياناتك");
     } catch (error) {
       toast.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation().unwrap();
+    } catch {
+      // proceed even if the server call fails
+    } finally {
+      tokenStorage.clear();
+      dispatch(logout());
+      router.push("/login");
     }
   };
 
@@ -96,7 +116,18 @@ export default function ProfileSettings() {
           disabled
         />
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between pt-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+          >
+            <LogOut className="h-4 w-4" />
+            {isLoggingOut ? "جارٍ تسجيل الخروج…" : "تسجيل الخروج"}
+          </Button>
+
           <Button type="submit" disabled={isUpdating}>
             {isUpdating ? "جارٍ الحفظ…" : "حفظ التغييرات"}
           </Button>

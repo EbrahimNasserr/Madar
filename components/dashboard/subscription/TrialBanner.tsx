@@ -23,7 +23,7 @@ export default function TrialBanner() {
   return (
     <div
       className={[
-        "flex flex-col gap-4 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col mx-5 mt-2 gap-4 rounded-2xl border p-2 sm:flex-row sm:items-center sm:justify-between",
         urgent
           ? "border-amber-200 bg-amber-50"
           : "border-indigo-200 bg-indigo-50",
