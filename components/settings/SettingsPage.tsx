@@ -1,33 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { User, Lock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { User, Lock, CreditCard } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
 import PageHeader from "@/components/ui/PageHeader";
 import ProfileSettings from "./ProfileSettings";
 import AccountSettings from "./AccountSettings";
+import SubscriptionSettings from "./SubscriptionSettings";
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
-type TabId = "profile" | "account";
+type TabId = "profile" | "account" | "subscription";
 
 const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
-  { id: "profile", label: "الملف الشخصي", icon: User },
-  { id: "account", label: "أمان الحساب",  icon: Lock },
+  { id: "profile",      label: "الملف الشخصي",  icon: User       },
+  { id: "account",      label: "أمان الحساب",    icon: Lock       },
+  { id: "subscription", label: "الاشتراك",        icon: CreditCard },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabId>("profile");
+  const searchParams = useSearchParams();
+  const tabParam     = searchParams.get("tab") as TabId | null;
+
+  const [activeTab, setActiveTab] = useState<TabId>(
+    tabParam && TABS.some((t) => t.id === tabParam) ? tabParam : "profile"
+  );
+
+  // Sync if URL param changes (e.g. redirected from SubscriptionGuard)
+  useEffect(() => {
+    if (tabParam && TABS.some((t) => t.id === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   return (
     <section className="space-y-6 animate-[appear_0.28s_ease-out]" dir="rtl">
       <PageHeader
         eyebrow="الإعدادات"
         title="إعدادات الحساب"
-        description="أدِر بياناتك الشخصية وكلمة المرور."
+        description="أدِر بياناتك الشخصية وكلمة المرور واشتراكك."
       />
 
       {/* Tab bar */}
@@ -51,8 +66,9 @@ export default function SettingsPage() {
       </div>
 
       {/* Tab panels */}
-      {activeTab === "profile" && <ProfileSettings />}
-      {activeTab === "account" && <AccountSettings />}
+      {activeTab === "profile"      && <ProfileSettings />}
+      {activeTab === "account"      && <AccountSettings />}
+      {activeTab === "subscription" && <SubscriptionSettings />}
     </section>
   );
 }

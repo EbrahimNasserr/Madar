@@ -72,7 +72,7 @@ export function Hero() {
               href="/signup"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-md bg-gradient-to-b from-[#3157d5] to-primary text-white text-[14.5px] font-bold shadow-[0_6px_20px_rgba(6,60,188,0.28)] hover:opacity-90 hover:-translate-y-px transition-all no-underline"
             >
-              ابدأ مجانًا <ArrowLeft size={16} strokeWidth={2.5} />
+              ابدأ تجربتك المجانية <ArrowLeft size={16} strokeWidth={2.5} />
             </Link>
             <a
               href="#features"
@@ -84,7 +84,7 @@ export function Hero() {
 
           {/* Trust row */}
           <div className="flex flex-wrap gap-5 mt-5 text-[12px] text-muted-foreground">
-            {['بدون بطاقة ائتمان', 'مصمم للموبايل', 'إعداد في دقيقتين'].map(t => (
+            {['14 يوم مجانًا', 'بدون بطاقة ائتمان', 'إعداد في دقيقتين'].map(t => (
               <span key={t} className="flex items-center gap-1.5">
                 <Check size={13} strokeWidth={2.5} className="text-primary" />
                 {t}

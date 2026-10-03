@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/src/lib/store/hooks";
 import { ONBOARDING_KEY } from "@/components/onboarding/OnboardingWizard";
+import SubscriptionGuard from "@/components/auth/SubscriptionGuard";
 
 export default function DashboardLayout({
   children,
@@ -11,7 +12,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-
   const { user, initialized } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
@@ -22,7 +22,6 @@ export default function DashboardLayout({
       return;
     }
 
-    // Redirect new users to onboarding until they complete (or skip) it
     if (typeof window !== "undefined") {
       const done = localStorage.getItem(ONBOARDING_KEY);
       if (!done) {
@@ -46,7 +45,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {children}
+      <SubscriptionGuard>
+        {children}
+      </SubscriptionGuard>
     </div>
   );
 }

@@ -15,15 +15,37 @@ export type ApiErrorResponse = {
   };
 };
 
-// ─── Helper ───────────────────────────────────────────────────────────────────
+// ─── Error code → Arabic message map ─────────────────────────────────────────
+
+const ERROR_CODE_MESSAGES: Record<string, string> = {
+  // Auth
+  INVALID_CREDENTIALS:        "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  EMAIL_ALREADY_EXISTS:       "البريد الإلكتروني مسجل بالفعل.",
+  TOKEN_EXPIRED:              "انتهت صلاحية الجلسة. سجّل دخولك مرة أخرى.",
+
+  // Subscription & Billing
+  SUBSCRIPTION_REQUIRED:              "يلزم وجود اشتراك لاستخدام هذه الميزة.",
+  SUBSCRIPTION_EXPIRED:               "انتهت فترة اشتراكك. اختر باقة للاستمرار.",
+  INVALID_PLAN:                        "الباقة المطلوبة غير متاحة.",
+  BILLING_CYCLE_NOT_AVAILABLE:         "دورة الدفع المطلوبة غير متاحة حاليًا.",
+  PAYMENT_PROVIDER_ERROR:              "تعذر الاتصال بخدمة الدفع. حاول مرة أخرى.",
+  BILLING_TRANSACTION_ALREADY_PROCESSED: "تمت معالجة عملية الدفع بالفعل.",
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
  * Extracts a human-readable Arabic error message from an RTK Query error.
- * Falls back to a generic message when the shape is unexpected.
+ * Checks error code map first, then falls back to the API message,
+ * then to a generic fallback.
  */
 export function getApiErrorMessage(error: unknown): string {
   if (typeof error === 'object' && error !== null && 'data' in error) {
     const apiError = error as ApiErrorResponse
+    const code = apiError.data?.code
+    if (code && ERROR_CODE_MESSAGES[code]) {
+      return ERROR_CODE_MESSAGES[code]
+    }
     return apiError.data?.message ?? 'حدث خطأ غير متوقع'
   }
   return 'حدث خطأ غير متوقع'

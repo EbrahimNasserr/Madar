@@ -8,29 +8,39 @@ export type Feature =
   | "sessions"
   | "attendance"
   | "payments"
+  | "expenses"
   | "dashboard"
+  | "reports"
   | "quizzes"
   | "grades"
   | "advanced_analytics";
 
+export type SubscriptionStatus =
+  | "trial"
+  | "trial_expired"
+  | "active"
+  | "past_due"
+  | "expired"
+  | "cancelled";
+
 export type SubscriptionData = {
-  status: string;
-  plan: "basic" | "pro";
+  status: SubscriptionStatus;
+  plan: "basic" | "pro" | null;
   access: boolean;
-  billingCycle: string | null;
+  billingCycle: "monthly" | "yearly" | null;
   features: Feature[];
   trial: {
     active: boolean;
-    startsAt: string | null;
-    endsAt: string | null;
-    daysRemaining: number;
+    startsAt?: string;
+    endsAt?: string;
+    daysRemaining?: number;
   };
   currentPeriod: {
     startsAt: string | null;
     endsAt: string | null;
   };
   cancelAtPeriodEnd: boolean;
-  nextPlan: string | null;
+  nextPlan: "basic" | "pro" | null;
 };
 
 export type SubscriptionResponse = {

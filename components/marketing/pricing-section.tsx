@@ -191,6 +191,14 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ plan = null }) =
             </div>
           </div>
         </div>
+
+        {/* Trial note — guests only */}
+        {plan === null && (
+          <p className="mt-8 text-center text-sm text-[#667085]">
+            ابدأ بتجربة <strong className="text-[#111827]">Pro مجانية لمدة 14 يوم</strong> — بدون بطاقة بنكية.
+            <br className="hidden sm:block" /> بعدها اختر الخطة المناسبة لك.
+          </p>
+        )}
       </div>
     </section>
   );
