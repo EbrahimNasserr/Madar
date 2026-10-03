@@ -9,11 +9,11 @@ import { FEATURES } from "@/src/constants/features";
 import { useGetQuizzesQuery } from "@/src/lib/api/quizzesApi";
 import type { Quiz } from "@/src/lib/api/quizzesApi";
 import QuizCreateModal from "./QuizCreateModal";
-import ProFeatureCard from "@/components/subscription/ProFeatureCard";
 import EmptyState from "@/components/ui/EmptyState";
 import PageSkeleton from "@/components/ui/PageSkeleton";
 import PageHeader from "@/components/ui/PageHeader";
 import { formatDate } from "@/src/lib/formatters/date";
+import ProFeatureCard from "../subscription/ProFeatureCard";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
