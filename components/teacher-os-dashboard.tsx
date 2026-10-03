@@ -11,14 +11,13 @@ import { AppProvider, type AppView } from '@/components/dashboard/app-context'
 import { Sidebar }       from '@/components/dashboard/sidebar'
 import { Topbar }        from '@/components/dashboard/topbar'
 import { QuickAddModal } from '@/components/dashboard/quick-add-modal'
-import { TrialBanner }   from '@/components/dashboard/subscription/TrialBanner'
 import { StudentsPage }  from '@/components/dashboard/pages/students-page'
 import { GroupsPage }    from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }  from '@/components/dashboard/pages/payments-page'
 import { SessionsPage }  from '@/components/dashboard/sessions/SessionsPage'
-import { SimplePage }    from '@/components/dashboard/pages/simple-page'
 import type { PageKey }  from '@/components/dashboard/types'
 import SettingsPage from './settings/SettingsPage'
+import TrialBanner from './dashboard/subscription/TrialBanner'
 
 // Routes the shell renders inline (everything else uses the `children` prop)
 const KNOWN_PAGES: string[] = [

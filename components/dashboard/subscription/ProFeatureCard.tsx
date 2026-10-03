@@ -14,9 +14,7 @@ export default function ProFeatureCard({ title, description }: Props) {
 
       <h3 className="mt-4 text-lg font-bold text-slate-950">{title}</h3>
 
-      <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
-        {description}
-      </p>
+      <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">{description}</p>
 
       <Link
         href="/subscription"

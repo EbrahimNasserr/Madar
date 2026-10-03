@@ -19,8 +19,8 @@ import { GroupSessionsList }         from './GroupSessionsList'
 import FeatureGuard                  from '@/components/auth/FeatureGuard'
 import { FEATURES }                  from '@/src/constants/features'
 import GroupQuizPerformance          from '@/components/dashboard/quizzes/GroupQuizPerformance'
-import ProFeatureCard                from '@/components/subscription/ProFeatureCard'
 import { toast }                     from 'sonner'
+import ProFeatureCard from '../../subscription/ProFeatureCard'
 
 type Props = {
   params: Promise<{ id: string }>

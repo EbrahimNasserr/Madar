@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { useGetSubscriptionQuery } from "@/src/lib/api/subscriptionApi";
 
-type Props = {
-  daysRemaining: number;
-};
+export default function TrialBanner() {
+  const { data } = useGetSubscriptionQuery();
+  const subscription = data?.data?.subscription;
 
-export default function TrialBanner({ daysRemaining }: Props) {
+  if (subscription?.status !== "trial") return null;
+
+  const daysRemaining = subscription.trial?.daysRemaining ?? 0;
   const urgent = daysRemaining <= 3;
 
   const message =

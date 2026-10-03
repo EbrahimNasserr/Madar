@@ -19,7 +19,6 @@ import { FinancialTrendChart }        from './FinancialTrendChart'
 import { AttendanceTrendChart }       from './AttendanceTrendChart'
 import { GroupsPerformance }          from './GroupsPerformance'
 import TrialBanner                    from '@/components/dashboard/subscription/TrialBanner'
-import { useGetSubscriptionQuery }    from '@/src/lib/api/subscriptionApi'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -53,10 +52,7 @@ export function DashboardPage() {
     refetch,
   } = useGetDashboardOverviewQuery(period)
 
-  const { data: subscriptionData } = useGetSubscriptionQuery()
-
-  const {
-    data: financialData,
+  const { data: financialData,
     isLoading: financialLoading,
     isFetching: financialFetching,
   } = useGetFinancialTrendQuery(6)
@@ -116,8 +112,6 @@ export function DashboardPage() {
   const recentPayments  = overview.recentPayments  ?? []
   const sessions        = overview.sessions        ?? []
 
-  const subscription = subscriptionData?.data.subscription
-
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div
@@ -126,9 +120,7 @@ export function DashboardPage() {
     >
 
       {/* ── Trial banner ── */}
-      {subscription?.status === 'trial' && (
-        <TrialBanner daysRemaining={subscription.trial.daysRemaining ?? 0} />
-      )}
+      <TrialBanner />
 
       {/* ── Page header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
