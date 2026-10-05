@@ -8,9 +8,10 @@ import {
 } from 'lucide-react'
 
 import { AppProvider, type AppView } from '@/components/dashboard/app-context'
-import { Sidebar }       from '@/components/dashboard/sidebar'
-import { Topbar }        from '@/components/dashboard/topbar'
-import { QuickAddModal } from '@/components/dashboard/quick-add-modal'
+import { Sidebar }             from '@/components/dashboard/sidebar'
+import { Topbar }              from '@/components/dashboard/topbar'
+import { QuickAddModal }       from '@/components/dashboard/quick-add-modal'
+import { GlobalSearchModal }   from '@/components/dashboard/GlobalSearchModal'
 import { StudentsPage }  from '@/components/dashboard/pages/students-page'
 import { GroupsPage }    from '@/components/dashboard/pages/groups-page'
 import { PaymentsPage }  from '@/components/dashboard/pages/payments-page'
@@ -69,6 +70,7 @@ function DashboardShell({ children }: { children?: React.ReactNode }) {
       </div>
 
       <QuickAddModal />
+      <GlobalSearchModal />
 
       {/* Mobile bottom navigation */}
       <nav

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Search, Plus, Clock, Sparkles, Menu } from 'lucide-react'
 import NotificationBell from '@/components/layout/NotificationBell'
 import { useApp } from './app-context'
@@ -31,6 +31,18 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
   } = useApp()
 
   const todayArabic = useTodayArabic()
+
+  // ── Ctrl+K / Cmd+K shortcut ───────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [setIsSearchOpen])
 
   // ── Real subscription / plan ──────────────────────────────────────────────
   const { data: subData } = useGetSubscriptionQuery()
