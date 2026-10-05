@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useMemo, useState } from 'react'
+import { UserPlus, CalendarPlus, CheckCircle2, ArrowLeft } from 'lucide-react'
 import { useGetGroupQuery, useGetGroupStudentsQuery } from '@/src/lib/api/groupsApi'
 import { useGetStudentsQuery }    from '@/src/lib/api/studentsApi'
 import {
@@ -20,12 +21,116 @@ import FeatureGuard                  from '@/components/auth/FeatureGuard'
 import { FEATURES }                  from '@/src/constants/features'
 import GroupQuizPerformance          from '@/components/dashboard/quizzes/GroupQuizPerformance'
 import { toast }                     from 'sonner'
-import ProFeatureCard from '../../subscription/ProFeatureCard'
+import ProFeatureCard                from '../../subscription/ProFeatureCard'
 
 type Props = {
   params: Promise<{ id: string }>
 }
 
+// ── Setup checklist shown when the group is brand-new ─────────────────────────
+type SetupStep = {
+  id:          string
+  icon:        React.ElementType
+  title:       string
+  description: string
+  done:        boolean
+  action?:     () => void
+  actionLabel: string
+}
+
+function SetupChecklist({
+  steps,
+}: {
+  steps: SetupStep[]
+}) {
+  const completedCount = steps.filter((s) => s.done).length
+  const allDone        = completedCount === steps.length
+
+  if (allDone) return null           // dismiss wizard once everything is done
+
+  return (
+    <section className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-base font-bold text-indigo-900">
+            🚀 أكمل إعداد مجموعتك
+          </h2>
+          <p className="mt-0.5 text-sm text-slate-500">
+            {completedCount} من {steps.length} خطوات مكتملة
+          </p>
+        </div>
+
+        {/* Mini progress bar */}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span className="text-xs font-semibold text-indigo-600">
+            {Math.round((completedCount / steps.length) * 100)}%
+          </span>
+          <div className="h-2 w-24 overflow-hidden rounded-full bg-indigo-100">
+            <div
+              className="h-full rounded-full bg-indigo-500 transition-all duration-500"
+              style={{ width: `${(completedCount / steps.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Steps */}
+      <ol className="mt-5 space-y-3">
+        {steps.map((step, idx) => (
+          <li
+            key={step.id}
+            className={`flex items-center gap-4 rounded-xl border p-4 transition ${
+              step.done
+                ? 'border-emerald-100 bg-emerald-50/60'
+                : 'border-slate-200 bg-white'
+            }`}
+          >
+            {/* Step number / check */}
+            <div
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-sm ${
+                step.done
+                  ? 'bg-emerald-100 text-emerald-600'
+                  : 'bg-indigo-100 text-indigo-700'
+              }`}
+            >
+              {step.done ? (
+                <CheckCircle2 className="h-5 w-5" />
+              ) : (
+                idx + 1
+              )}
+            </div>
+
+            {/* Copy */}
+            <div className="min-w-0 flex-1">
+              <p className={`font-semibold text-sm ${step.done ? 'text-emerald-800 line-through decoration-emerald-300' : 'text-slate-900'}`}>
+                {step.title}
+              </p>
+              {!step.done && (
+                <p className="mt-0.5 text-xs text-slate-500 leading-relaxed">
+                  {step.description}
+                </p>
+              )}
+            </div>
+
+            {/* CTA */}
+            {!step.done && step.action && (
+              <button
+                onClick={step.action}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+              >
+                {step.actionLabel}
+                <ArrowLeft className="h-3 w-3" />
+              </button>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+// ── Page component ────────────────────────────────────────────────────────────
 export function GroupDetailsPage({ params }: Props) {
   const { id } = use(params)
 
@@ -70,22 +175,55 @@ export function GroupDetailsPage({ params }: Props) {
   // ── Loading / not found ────────────────────────────────────────────────────
   if (groupLoading || !group) {
     return (
-      <div className="flex items-center justify-center p-16 text-sm text-slate-500">
-        جارٍ تحميل المجموعة...
+      <div className="flex flex-col items-center justify-center gap-4 p-20 text-center" dir="rtl">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
+        <p className="text-sm text-slate-500">جارٍ تحميل بيانات المجموعة…</p>
       </div>
     )
   }
 
+  // ── Setup wizard steps ─────────────────────────────────────────────────────
+  // Only compute when the relevant data has loaded (avoids false "not done" flickers)
+  const dataReady = !studentsLoading && !sessionsLoading
+
+  const setupSteps: SetupStep[] = [
+    {
+      id:          'students',
+      icon:        UserPlus,
+      title:       'أضف طلابًا للمجموعة',
+      description: 'سجّل الطلاب حتى يظهروا في الحضور وتتبع مدفوعاتهم.',
+      done:        dataReady && enrolledStudents.length > 0,
+      // Scroll to the students section
+      action:      () => document.getElementById('students-section')?.scrollIntoView({ behavior: 'smooth' }),
+      actionLabel: 'إضافة طالب',
+    },
+    {
+      id:          'session',
+      icon:        CalendarPlus,
+      title:       'أنشئ أول حصة',
+      description: 'سجّل حصة لتبدأ بتسجيل الحضور ومتابعة المدفوعات.',
+      done:        dataReady && sessions.length > 0,
+      action:      () => setCreateSessionOpen(true),
+      actionLabel: 'إنشاء حصة',
+    },
+  ]
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" dir="rtl">
+    <div className="space-y-5" dir="rtl">
+      {/* Hero header */}
       <GroupDetailHeader
         group={group}
         enrolledCount={enrolledStudents.length}
       />
 
+      {/* Setup wizard — only visible while the group is incomplete */}
+      {dataReady && <SetupChecklist steps={setupSteps} />}
+
+      {/* Weekly schedule */}
       <GroupSchedule schedule={group.schedule} />
 
+      {/* Sessions */}
       <GroupSessionsList
         groupId={id}
         sessions={sessions}
@@ -94,7 +232,7 @@ export function GroupDetailsPage({ params }: Props) {
         onAdd={() => setCreateSessionOpen(true)}
       />
 
-      {/* Payments — conditional on billing model */}
+      {/* Payments */}
       {group.billingModel === 'monthly' ? (
         <MonthlyPaymentLedger groupId={id} />
       ) : (
@@ -106,14 +244,17 @@ export function GroupDetailsPage({ params }: Props) {
         </div>
       )}
 
-      <GroupStudentsList
-        groupId={id}
-        enrolledStudents={enrolledStudents}
-        availableStudents={availableStudents}
-        isLoading={studentsLoading}
-      />
+      {/* Students */}
+      <div id="students-section">
+        <GroupStudentsList
+          groupId={id}
+          enrolledStudents={enrolledStudents}
+          availableStudents={availableStudents}
+          isLoading={studentsLoading}
+        />
+      </div>
 
-      {/* Quiz performance analytics — advanced_analytics feature */}
+      {/* Quiz performance analytics */}
       <FeatureGuard
         feature={FEATURES.ADVANCED_ANALYTICS}
         fallback={

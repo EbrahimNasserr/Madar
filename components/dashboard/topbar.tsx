@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Search, Bell, Plus, Clock, Sparkles, Menu } from 'lucide-react'
+import { useMemo } from 'react'
+import { Search, Plus, Clock, Sparkles, Menu } from 'lucide-react'
+import NotificationBell from '@/components/layout/NotificationBell'
 import { useApp } from './app-context'
 import { useGetSubscriptionQuery } from '@/src/lib/api/subscriptionApi'
 
@@ -25,9 +26,6 @@ function useTodayArabic() {
 
 export function Topbar({ onMenuToggle }: TopbarProps) {
   const {
-    unreadNotificationCount,
-    notifications,
-    markNotificationsAsRead,
     setIsQuickAddOpen,
     setIsSearchOpen,
   } = useApp()
@@ -38,7 +36,6 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
   const { data: subData } = useGetSubscriptionQuery()
   const plan = subData?.data?.subscription.plan ?? 'basic'
 
-  const [isNotifOpen, setIsNotifOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
@@ -92,41 +89,7 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
         </button>
 
         {/* Notifications */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setIsNotifOpen((o) => !o)
-              if (!isNotifOpen) markNotificationsAsRead()
-            }}
-            className="p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 relative"
-            aria-label="الإشعارات"
-          >
-            <Bell className="w-4 h-4" aria-hidden="true" />
-            {unreadNotificationCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#F04438]" aria-hidden="true" />
-            )}
-          </button>
-
-          {isNotifOpen && (
-            <div className="absolute left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-50 text-right animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
-                <span className="text-xs font-bold text-[#111827]">الإشعارات والتنبيهات</span>
-                <span className="text-[10px] text-[#3157D5] font-semibold">كل التنبيهات مقروءة</span>
-              </div>
-              <div className="space-y-2.5 max-h-72 overflow-y-auto">
-                {notifications.map((n) => (
-                  <div key={n.id} className="p-2.5 rounded-xl bg-[#F7F8FC] border border-gray-100 text-xs">
-                    <div className="font-bold text-[#111827] flex items-center justify-between mb-1">
-                      <span>{n.title}</span>
-                      <span className="text-[10px] text-gray-400 font-normal">{n.time}</span>
-                    </div>
-                    <p className="text-[#667085] text-[11px] leading-relaxed">{n.message}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        <NotificationBell />
 
         {/* Mobile hamburger */}
         <button
