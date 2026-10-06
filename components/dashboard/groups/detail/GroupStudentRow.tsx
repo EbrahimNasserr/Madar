@@ -6,6 +6,7 @@ import type { Student } from '@/src/lib/api/studentsApi'
 import { useRemoveStudentFromGroupMutation } from '@/src/lib/api/groupsApi'
 import { getApiErrorMessage } from '../shared/constants'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 type GroupStudentRowProps = {
   student: Student
@@ -29,9 +30,9 @@ export function GroupStudentRow({ student, groupId }: GroupStudentRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 px-6 py-4">
       <div className="min-w-0">
-        <p className="truncate font-medium text-slate-900">
+        <Link href={`/students/${student._id}`} className="truncate font-medium text-slate-900">
           {student.firstName} {student.lastName}
-        </p>
+        </Link>
         <p className="mt-0.5 text-xs text-slate-500">
           {student.phone || 'لا يوجد رقم هاتف'}
         </p>

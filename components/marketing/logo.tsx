@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import LogoImage from '@/public/logo.jpeg'
+import LogoImage from '@/public/logo.png'
 import Image from 'next/image'
 export function Logo({ inverted = false }: { inverted?: boolean }) {
   return (

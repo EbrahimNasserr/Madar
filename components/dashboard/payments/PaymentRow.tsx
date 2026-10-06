@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { LedgerItem } from '@/src/lib/api/paymentsApi'
 import { Modal, ModalBody } from '@/components/ui/Modal'
 import { PaymentForm } from './PaymentForm'
+import Link from 'next/link'
 
 // ─── Status config ────────────────────────────────────────────────────────────
 
@@ -39,7 +40,7 @@ export function PaymentRow({ item, groupId, billingPeriod }: PaymentRowProps) {
       <tr className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
         {/* Student name */}
         <td className="px-5 py-4 font-medium text-slate-900 whitespace-nowrap">
-          {item.student.firstName} {item.student.lastName}
+          <Link href={`/students/${item.student._id}`}>{item.student.firstName} {item.student.lastName}</Link>
         </td>
 
         {/* Required */}
