@@ -8,7 +8,7 @@ import { useGetSubscriptionQuery } from "@/src/lib/api/subscriptionApi";
 // Paths accessible even without an active subscription
 const ALLOWED_WITHOUT_SUBSCRIPTION = [
   "/settings",
-  "/billing",
+  "/billing/result",
 ];
 
 export default function SubscriptionGuard({ children }: { children: ReactNode }) {
