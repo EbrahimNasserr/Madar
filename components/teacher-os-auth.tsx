@@ -101,10 +101,27 @@ export default function MadarAuth({ signup = false }: { signup?: boolean }) {
             البريد الإلكتروني
             <input name="email" required type="email" placeholder="ahmed@example.com" />
           </label>
-          <label>
-            كلمة المرور
-            <input name="password" required type="password" placeholder="••••••••" />
-          </label>
+          <div>
+            <label style={{ marginBottom: "7px" }}>
+              كلمة المرور
+              <input name="password" required type="password" placeholder="••••••••" />
+            </label>
+            {!signup && (
+              <div style={{ textAlign: "left", marginTop: "6px" }}>
+                <Link
+                  href="/forgot-password"
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--primary, #063cbc)",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                  }}
+                >
+                  نسيت كلمة المرور؟
+                </Link>
+              </div>
+            )}
+          </div>
 
           {error && (
             <p role="alert" style={{ color: 'var(--color-error, #ef4444)', fontSize: '0.875rem' }}>

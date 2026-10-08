@@ -37,6 +37,11 @@ type GetMeResponse = {
   data: { user: AuthUser };
 };
 
+type MessageResponse = {
+  success: boolean;
+  message: string;
+};
+
 // ─── Auth endpoints ───────────────────────────────────────────────────────────
 
 export const authApi = baseApi.injectEndpoints({
@@ -92,6 +97,25 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Auth"],
     }),
+
+    forgotPassword: builder.mutation<MessageResponse, { email: string }>({
+      query: (body) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    resetPassword: builder.mutation<
+      MessageResponse,
+      { token: string; password: string }
+    >({
+      query: (body) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -102,4 +126,6 @@ export const {
   useUpdateMeMutation,
   useChangePasswordMutation,
   useLogoutMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

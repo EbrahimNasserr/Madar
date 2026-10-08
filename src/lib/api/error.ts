@@ -22,6 +22,9 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   INVALID_CREDENTIALS:        "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
   EMAIL_ALREADY_EXISTS:       "البريد الإلكتروني مسجل بالفعل.",
   TOKEN_EXPIRED:              "انتهت صلاحية الجلسة. سجّل دخولك مرة أخرى.",
+  INVALID_TOKEN:              "الرابط غير صالح أو منتهي الصلاحية.",
+  RESET_TOKEN_EXPIRED:        "انتهت صلاحية رابط إعادة التعيين. أعد المحاولة من جديد.",
+  USER_NOT_FOUND:             "لا يوجد حساب مرتبط بهذا البريد الإلكتروني.",
 
   // Subscription & Billing
   SUBSCRIPTION_REQUIRED:              "يلزم وجود اشتراك لاستخدام هذه الميزة.",

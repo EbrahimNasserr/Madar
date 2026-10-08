@@ -1,13 +1,14 @@
 'use client'
 
 import { use, useEffect, useMemo, useState } from 'react'
-import { CheckCircle, Loader2, ArrowRight } from 'lucide-react'
+import { CheckCircle, Loader2, ArrowRight, Download } from 'lucide-react'
 import Link from 'next/link'
 
 import { useGetSessionQuery }            from '@/src/lib/api/sessionsApi'
 import {
   useGetAttendanceSheetQuery,
   useSaveAttendanceSheetMutation,
+  useExportAttendance,
   type AttendanceStatus,
 } from '@/src/lib/api/attendanceApi'
 import {
@@ -42,6 +43,7 @@ export function AttendanceWorkspace({ params }: Props) {
   const { data: sheetData,   isLoading: sheetLoading }   = useGetAttendanceSheetQuery(id)
   const [saveSheet, { isLoading: isSaving, isSuccess: isSavedOnce }] =
     useSaveAttendanceSheetMutation()
+  const { exportAttendance, isExporting } = useExportAttendance()
 
   // Derive group info from the session (backend may populate groupId as object)
   const session      = sessionData?.data.session
@@ -192,20 +194,50 @@ export function AttendanceWorkspace({ params }: Props) {
       {/* ── Sticky save bar ── */}
       <div className="sticky bottom-4 z-10">
         <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-lg backdrop-blur-sm">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving || attendance.length === 0}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3157D5] py-3.5 text-sm font-bold text-white hover:bg-[#243FA3] disabled:opacity-50 transition"
-          >
-            {isSaving ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ حفظ الحضور...</>
-            ) : (attendanceSaved || isSavedOnce) ? (
-              <><CheckCircle className="h-4 w-4" /> تحديث الحضور</>
-            ) : (
-              `حفظ حضور ${attendance.length} طالب`
+          <div className="flex gap-2">
+            {/* Save button */}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving || attendance.length === 0}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#3157D5] py-3.5 text-sm font-bold text-white hover:bg-[#243FA3] disabled:opacity-50 transition"
+            >
+              {isSaving ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ حفظ الحضور...</>
+              ) : (attendanceSaved || isSavedOnce) ? (
+                <><CheckCircle className="h-4 w-4" /> تحديث الحضور</>
+              ) : (
+                `حفظ حضور ${attendance.length} طالب`
+              )}
+            </button>
+
+            {/* Export Excel button — only when sheet has been saved */}
+            {(attendanceSaved || isSavedOnce) && (
+              <button
+                type="button"
+                onClick={() => {
+                  const groupName = group?.name ?? 'group'
+                  const dateStr   = session?.sessionDate
+                    ? new Date(session.sessionDate).toISOString().slice(0, 10)
+                    : new Date().toISOString().slice(0, 10)
+                  const safeName  = groupName.replace(/\s+/g, '_')
+                  exportAttendance(id, `Madar_Attendance_${safeName}_${dateStr}.xlsx`)
+                }}
+                disabled={isExporting}
+                title="تحميل كشف الحضور Excel"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition"
+              >
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">
+                  {isExporting ? 'جارٍ التحميل...' : 'تحميل Excel'}
+                </span>
+              </button>
             )}
-          </button>
+          </div>
         </div>
       </div>
 
