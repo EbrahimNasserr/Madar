@@ -55,6 +55,38 @@ type MutationResponse = {
   data: { student: Student };
 };
 
+// ─── Parent report response ──────────────────────────────────────────────────
+
+export type ParentReportData = {
+  student: {
+    name: string;
+    grade?: string;
+  };
+  attendance: {
+    total: number;
+    present: number;
+    late: number;
+    absent: number;
+    rate: number;
+  };
+  payments: {
+    expected: number;
+    paid: number;
+    outstanding: number;
+  };
+  groups: { name: string; subject?: string }[];
+  quizzes: {
+    count: number;
+    average: number;
+    latest: { title: string; score: number; total: number }[];
+  };
+};
+
+type ParentReportResponse = {
+  success: boolean;
+  data: ParentReportData;
+};
+
 // API error shape from the backend
 export type StudentsQueryParams = {
   page?: number;
@@ -121,6 +153,13 @@ export const studentsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Students", id: "LIST" }],
     }),
+
+    getParentReport: builder.query<ParentReportResponse, string>({
+      query: (studentId) => `/students/${studentId}/parent-report`,
+      providesTags: (_result, _error, studentId) => [
+        { type: "Reports", id: `STUDENT-${studentId}` },
+      ],
+    }),
   }),
 });
 
@@ -130,4 +169,6 @@ export const {
   useCreateStudentMutation,
   useUpdateStudentMutation,
   useDeleteStudentMutation,
+  useGetParentReportQuery,
+  useLazyGetParentReportQuery,
 } = studentsApi;

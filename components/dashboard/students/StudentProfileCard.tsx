@@ -1,8 +1,12 @@
-import { Phone, GraduationCap, School, MessageSquare } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
+import { Phone, GraduationCap, School, MessageSquare, MessageCircle } from 'lucide-react'
 import type { Student } from '@/src/lib/api/studentsApi'
 import { Avatar }      from './shared/Avatar'
 import { StatusBadge } from './shared/StatusBadge'
 import { SCHOOL_TYPE_LABELS } from './shared/constants'
+import { SendParentReportModal } from './SendParentReportModal'
 
 // ─── Single info row ──────────────────────────────────────────────────────────
 
@@ -35,6 +39,7 @@ type Props = { student: Student }
 
 export function StudentProfileCard({ student }: Props) {
   const fullName = `${student.firstName} ${student.lastName}`
+  const [showReportModal, setShowReportModal] = useState(false)
 
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
@@ -57,7 +62,23 @@ export function StudentProfileCard({ student }: Props) {
               )}
             </div>
           </div>
-          <StatusBadge status={student.status} />
+          <div className="flex items-center gap-2">
+            <StatusBadge status={student.status} />
+            <button
+              type="button"
+              onClick={() => setShowReportModal(true)}
+              disabled={!student.parentPhone}
+              title={
+                student.parentPhone
+                  ? 'إرسال تقرير لولي الأمر عبر WhatsApp'
+                  : 'لا يوجد رقم ولي الأمر'
+              }
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -82,6 +103,11 @@ export function StudentProfileCard({ student }: Props) {
             <p className="mt-0.5 text-sm text-amber-900 leading-relaxed">{student.notes}</p>
           </div>
         </div>
+      )}
+
+      {/* WhatsApp report modal */}
+      {showReportModal && (
+        <SendParentReportModal student={student} onClose={() => setShowReportModal(false)} />
       )}
     </section>
   )
