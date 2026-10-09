@@ -1,19 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Menu, X } from 'lucide-react'
 import { Logo } from './logo'
+import { scrollToSection } from '@/src/lib/lenis'
 
 const navLinks = [
-  { label: 'المميزات',        href: '#features' },
-  { label: 'كيف يعمل؟',      href: '#workflow' },
-  { label: 'الأسعار',         href: '/pricing'  },
-  { label: 'الأسئلة الشائعة', href: '#faq'      },
+  { label: 'المميزات',        href: '#features'     },
+  { label: 'كيف يعمل؟',      href: '#how-it-works' },
+  { label: 'الأسعار',         href: '/pricing'      },
+  { label: 'الأسئلة الشائعة', href: '#faq'          },
 ]
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+
+    const exists = document.querySelector(href)
+    if (exists) {
+      // Section is on the current page — smooth scroll via Lenis
+      scrollToSection(href)
+    } else {
+      // Section not on this page — navigate to homepage with hash
+      router.push(`/${href}`)
+    }
+
+    setOpen(false)
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
@@ -28,6 +46,7 @@ export function Navbar() {
               <a
                 key={href}
                 href={href}
+                onClick={(e) => handleAnchorClick(e, href)}
                 className="text-muted-foreground text-[13.5px] px-3 py-1.5 rounded-md hover:text-primary hover:bg-muted transition-colors duration-150 no-underline"
               >
                 {label}
@@ -78,7 +97,7 @@ export function Navbar() {
               <a
                 key={href}
                 href={href}
-                onClick={() => setOpen(false)}
+                onClick={(e) => handleAnchorClick(e, href)}
                 className="block px-4 py-3 rounded-lg text-muted-foreground text-[14px] hover:bg-muted hover:text-primary no-underline"
               >
                 {label}

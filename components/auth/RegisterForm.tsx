@@ -182,6 +182,23 @@ export default function RegisterForm() {
             )}
           </Button>
 
+          <p className="text-center text-xs leading-6 text-slate-500">
+            بإنشاء حساب، أنت توافق على{" "}
+            <Link
+              href="/terms"
+              className="font-medium text-indigo-600 hover:underline"
+            >
+              الشروط والأحكام
+            </Link>{" "}
+            و{" "}
+            <Link
+              href="/privacy"
+              className="font-medium text-indigo-600 hover:underline"
+            >
+              سياسة الخصوصية
+            </Link>
+          </p>
+
           <p className="text-center text-sm text-slate-500">
             لديك حساب بالفعل؟{" "}
             <Link

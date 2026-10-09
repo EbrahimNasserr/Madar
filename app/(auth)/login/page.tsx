@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import MadarAuth from '@/components/teacher-os-auth'
 
 export const metadata: Metadata = {
-  title: 'تسجيل الدخول',
+  title: ' مَدار | تسجيل الدخول',
   description: 'سجّل دخولك لحسابك على مدار وتابع طلابك ومجموعاتك من أي مكان.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/login' },

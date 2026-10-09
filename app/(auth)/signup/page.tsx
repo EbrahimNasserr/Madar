@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RegisterForm from "@/components/auth/RegisterForm";
 
 export const metadata: Metadata = {
-  title: "إنشاء حساب",
+  title: "إنشاء حساب | مَدار",
   description:
     "انضم لمدار مجانًا وابدأ تنظيم حصصك وطلابك ومدفوعاتك من اليوم.",
   robots: { index: false, follow: false },

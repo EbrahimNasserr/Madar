@@ -64,9 +64,9 @@ export function Footer() {
             <div className="space-y-3">
               <div className="font-bold text-white text-xs uppercase tracking-wider">قانوني</div>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#terms" className="hover:text-white transition-colors">سياسة الخصوصية</a></li>
-                <li><a href="#terms" className="hover:text-white transition-colors">الشروط والأحكام</a></li>
-                <li><a href="#contact" className="hover:text-white transition-colors">تواصل مع الدعم</a></li>
+                <li><Link href="/privacy" className="hover:text-white transition-colors">سياسة الخصوصية</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition-colors">الشروط والأحكام</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">تواصل مع الدعم</Link></li>
               </ul>
             </div>
           </div>
