@@ -15,6 +15,7 @@ import {
   SESSION_STATUS_STYLES,
 } from '@/src/constants/sessionStatus'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { formatTime } from '@/src/lib/formatters/date'
 
 type SessionRowProps = {
   session: Session
@@ -66,7 +67,7 @@ export function SessionRow({ session, groupId }: SessionRowProps) {
           </div>
 
           <p dir="ltr" className="mt-1.5 text-sm text-slate-500">
-            {session.startTime} → {session.endTime}
+            {formatTime(session.startTime)} → {formatTime(session.endTime)}
           </p>
 
           {session.notes && (

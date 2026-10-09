@@ -1,6 +1,7 @@
 import { Clock } from 'lucide-react'
 import type { GroupSchedule as GroupScheduleType } from '@/src/lib/api/groupsApi'
 import { getDayLabel } from '@/src/constants/weekDays'
+import { formatTime } from '@/src/lib/formatters/date';
 
 // Maps each day-of-week index to a subtle accent colour pair
 const DAY_COLOURS: Record<number, { bg: string; dot: string; text: string }> = {
@@ -53,7 +54,7 @@ export function GroupSchedule({ schedule }: GroupScheduleProps) {
                   {getDayLabel(slot.dayOfWeek)}
                 </p>
                 <p dir="ltr" className="mt-0.5 text-sm font-medium text-slate-600">
-                  {slot.startTime} – {slot.endTime}
+                  {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
                 </p>
               </div>
             </div>

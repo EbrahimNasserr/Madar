@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Pencil, PowerOff } from 'lucide-react'
 import type { Group } from '@/src/lib/api/groupsApi'
+import { formatTime } from '@/src/lib/formatters/date'
 import { getDayLabel } from '@/src/constants/weekDays'
 import { BILLING_MODEL_LABELS, SCHOOL_TYPE_LABELS } from './shared/constants'
 
@@ -55,7 +56,7 @@ export function GroupCard({ group, onEdit, onDeactivate }: GroupCardProps) {
           <div key={i} className="flex items-center justify-between text-sm">
             <span className="text-slate-700">{getDayLabel(slot.dayOfWeek)}</span>
             <span dir="ltr" className="text-slate-500">
-              {slot.startTime} – {slot.endTime}
+              {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
             </span>
           </div>
         ))}
